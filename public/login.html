@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - OnScreen Signage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com/css2">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    :root {
+      --bg-body: #0f172a;
+      --bg-panel: #1e293b;
+      --bg-input: #334155;
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --text-main: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+      --danger: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: var(--text-main);
+    }
+
+    .login-panel {
+      width: min(100%, 420px);
+      padding: 28px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-panel);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .brand .material-icons-round {
+      color: var(--primary);
+      font-size: 30px;
+    }
+
+    h1 {
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 8px 0 24px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-input);
+      color: var(--text-main);
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+    }
+
+    button {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--primary);
+      color: #ffffff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button:disabled {
+      cursor: progress;
+      opacity: 0.72;
+    }
+
+    .error {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--danger);
+      font-size: 13px;
+    }
+
+    .display-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 20px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .display-link:hover {
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+  <main class="login-panel">
+    <div class="brand">
+      <span class="material-icons-round">connected_tv</span>
+      <div>
+        <h1>OnScreen Signage</h1>
+        <p>Sign in to manage screens, playlists, layouts, and uploaded media.</p>
+      </div>
+    </div>
+
+    <form id="loginForm">
+      <label for="password">Admin password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" autofocus required>
+      <button id="loginButton" type="submit">
+        <span class="material-icons-round">lock_open</span>
+        Sign in
+      </button>
+      <div class="error" id="loginError" role="alert"></div>
+    </form>
+
+    <a class="display-link" href="/display.html" target="_blank" rel="noreferrer">
+      <span class="material-icons-round">open_in_new</span>
+      Open display player
+    </a>
+  </main>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const passwordInput = document.getElementById('password');
+    const loginButton = document.getElementById('loginButton');
+    const loginError = document.getElementById('loginError');
+
+    function getRedirectTarget() {
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get('next') || '/control.html';
+      return next.startsWith('/') && !next.startsWith('//') ? next : '/control.html';
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      loginError.textContent = '';
+      loginButton.disabled = true;
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: passwordInput.value })
+        });
+
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({ error: 'Sign in failed' }));
+          loginError.textContent = error.error || 'Sign in failed';
+          loginButton.disabled = false;
+          return;
+        }
+
+        window.location.href = getRedirectTarget();
+      } catch (err) {
+        loginError.textContent = 'Could not reach the server.';
+        loginButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

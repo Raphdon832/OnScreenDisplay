@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: onscreen-signage
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PERSISTENT_ROOT
+        value: /var/data
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: AUTH_SECRET
+        generateValue: true
+    disk:
+      name: onscreen-signage-storage
+      mountPath: /var/data
+      sizeGB: 10

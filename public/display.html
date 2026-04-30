@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnScreen Signage Display</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.5s ease;
+    }
+    
+    /* Themes */
+    body.dark {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #ffffff;
+    }
+    
+    body.light {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: #1a1a2e;
+    }
+    
+    body.brand {
+      background: linear-gradient(135deg, #111827 0%, #1d4ed8 50%, #0f766e 100%);
+      color: #ffffff;
+    }
+    
+    body.nature {
+      background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+      color: #ffffff;
+    }
+    
+    .container {
+      text-align: center;
+      padding: 40px;
+      max-width: 95vw;
+      max-height: 95vh;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Welcome Screen */
+    .welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .welcome h1 {
+      font-size: 72px;
+      font-weight: 300;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .welcome .display-mark {
+      font-size: 96px;
+      margin-bottom: 28px;
+      opacity: 0.9;
+    }
+    
+    .welcome p {
+      font-size: 28px;
+      opacity: 0.8;
+      font-style: italic;
+    }
+    
+    /* Bible Verse Display */
+    .bible-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .bible-reference {
+      font-size: 36px;
+      font-weight: 600;
+      margin-bottom: 30px;
+      opacity: 0.9;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    
+    .bible-text {
+      font-size: 48px;
+      line-height: 1.6;
+      max-width: 90vw;
+      font-weight: 300;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    .bible-text::before {
+      content: '"';
+      font-size: 1.2em;
+      opacity: 0.6;
+    }
+    
+    .bible-text::after {
+      content: '"';
+      font-size: 1.2em;
+      opacity: 0.6;
+    }
+    
+    /* Lyrics Display */
+    .lyrics-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .lyrics-title {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 40px;
+      opacity: 0.8;
+      letter-spacing: 1px;
+    }
+    
+    .lyrics-text {
+      font-size: 56px;
+      line-height: 1.5;
+      max-width: 90vw;
+      font-weight: 400;
+      white-space: pre-line;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .lyrics-progress {
+      position: fixed;
+      bottom: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .lyrics-progress .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .lyrics-progress .dot.active {
+      background: rgba(255,255,255,0.9);
+      transform: scale(1.3);
+    }
+    
+    /* Program Display */
+    .program-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .program-header {
+      font-size: 28px;
+      opacity: 0.7;
+      margin-bottom: 20px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    
+    .program-current {
+      font-size: 64px;
+      font-weight: 600;
+      margin-bottom: 40px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .program-next {
+      font-size: 28px;
+      opacity: 0.6;
+    }
+    
+    .program-next span {
+      font-weight: 600;
+    }
+
+    /* Media Display */
+    .media-display {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      padding: 0;
+      max-width: none;
+      max-height: none;
+    }
+
+    .media-stage {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      gap: 8px;
+      padding: 8px;
+    }
+
+    .collage-background {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-position: center;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      transform: scale(1.03);
+    }
+
+    .media-stage.layout-single {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr;
+      gap: 0;
+      padding: 0;
+    }
+
+    .media-stage.layout-split {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .media-stage.layout-triple {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .media-stage.layout-quad {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+    }
+
+    .media-stage.layout-feature {
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .media-stage.layout-sidebar-left,
+    .media-stage.layout-sidebar-right {
+      grid-template-columns: 1fr 2fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .media-stage.layout-sidebar-right {
+      grid-template-columns: 2fr 1fr;
+    }
+
+    .media-stage.layout-top-strip,
+    .media-stage.layout-bottom-strip {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1.2fr 1fr;
+    }
+
+    .media-stage.layout-mosaic {
+      grid-template-columns: 1.45fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .media-stage.layout-six {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+    }
+
+    .media-zone {
+      position: relative;
+      overflow: hidden;
+      background: rgba(0,0,0,0.18);
+      min-width: 0;
+      min-height: 0;
+      z-index: 1;
+    }
+
+    .layout-feature .media-zone:first-child {
+      grid-row: span 2;
+    }
+
+    .layout-sidebar-left .media-zone:first-child,
+    .layout-sidebar-right .media-zone:first-child,
+    .layout-mosaic .media-zone:first-child {
+      grid-row: span 2;
+    }
+
+    .layout-top-strip .media-zone:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .layout-bottom-strip .media-zone:first-child {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    .layout-bottom-strip .media-zone:nth-child(2),
+    .layout-bottom-strip .media-zone:nth-child(3) {
+      grid-row: 1;
+    }
+
+    .layout-bottom-strip .media-zone:nth-child(2) {
+      grid-column: 1;
+    }
+
+    .layout-bottom-strip .media-zone:nth-child(3) {
+      grid-column: 2;
+    }
+
+    .media-zone img,
+    .media-zone video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: transparent;
+    }
+
+    .media-stage.template-transition .media-zone {
+      animation: templateIn 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .media-zone {
+      animation: zoneIn 0.38s ease both;
+    }
+
+    .media-zone:nth-child(2) { animation-delay: 45ms; }
+    .media-zone:nth-child(3) { animation-delay: 90ms; }
+    .media-zone:nth-child(4) { animation-delay: 135ms; }
+    .media-zone:nth-child(5) { animation-delay: 180ms; }
+    .media-zone:nth-child(6) { animation-delay: 225ms; }
+
+    @keyframes zoneIn {
+      from { opacity: 0; transform: scale(0.985); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes templateIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.992); filter: blur(3px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    .media-stage .hidden {
+      display: none !important;
+    }
+
+    .media-empty {
+      color: rgba(255,255,255,0.7);
+      font-size: 32px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .ticker-overlay {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 72px;
+      display: grid;
+      grid-template-columns: minmax(96px, 13vw) 1fr minmax(130px, 16vw);
+      align-items: center;
+      background: var(--ticker-bar-bg, #030712);
+      border-top: 1px solid rgba(255,255,255,0.16);
+      color: var(--ticker-text-color, #fff);
+      z-index: 15;
+      box-shadow: 0 -12px 30px rgba(0,0,0,0.36);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .ticker-overlay.no-time {
+      grid-template-columns: 0 1fr minmax(130px, 16vw);
+    }
+
+    .ticker-time,
+    .ticker-label {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .ticker-time {
+      grid-column: 1;
+      grid-row: 1;
+      position: relative;
+      z-index: 2;
+      background: var(--ticker-time-bg, #0f172a);
+      font-size: clamp(20px, 2.2vw, 34px);
+      color: var(--ticker-time-color, #93c5fd);
+    }
+
+    .ticker-label {
+      grid-column: 3;
+      grid-row: 1;
+      position: relative;
+      z-index: 2;
+      background: var(--ticker-label-bg, #2563eb);
+      color: var(--ticker-label-color, #fff);
+      font-size: clamp(16px, 1.6vw, 24px);
+      padding: 0 18px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ticker-scroll {
+      grid-column: 2 / 4;
+      grid-row: 1;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      background: var(--ticker-scroll-bg, #0f172a);
+    }
+
+    .ticker-track {
+      display: inline-flex;
+      align-items: center;
+      min-width: max-content;
+      padding-left: 100%;
+      animation: ticker-scroll var(--ticker-duration, 28s) linear infinite;
+      will-change: transform;
+    }
+
+    .ticker-track span {
+      display: inline-block;
+      padding: 0 56px;
+      font-size: clamp(22px, 2.5vw, 38px);
+      font-weight: 600;
+      color: var(--ticker-text-color, #fff);
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    @keyframes ticker-scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
+
+    @media (max-width: 760px) {
+      .media-stage.layout-split,
+      .media-stage.layout-triple,
+      .media-stage.layout-quad,
+      .media-stage.layout-feature,
+      .media-stage.layout-sidebar-left,
+      .media-stage.layout-sidebar-right,
+      .media-stage.layout-top-strip,
+      .media-stage.layout-bottom-strip,
+      .media-stage.layout-mosaic,
+      .media-stage.layout-six {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(var(--zone-count, 1), 1fr);
+      }
+
+      .layout-feature .media-zone:first-child,
+      .layout-sidebar-left .media-zone:first-child,
+      .layout-sidebar-right .media-zone:first-child,
+      .layout-mosaic .media-zone:first-child,
+      .layout-top-strip .media-zone:first-child,
+      .layout-bottom-strip .media-zone:first-child,
+      .layout-bottom-strip .media-zone:nth-child(2),
+      .layout-bottom-strip .media-zone:nth-child(3) {
+        grid-column: auto;
+        grid-row: auto;
+      }
+
+      .ticker-overlay {
+        grid-template-columns: 96px 1fr;
+        height: 64px;
+      }
+
+      .ticker-label {
+        display: none;
+      }
+    }
+
+    .cache-status {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      padding: 8px 14px;
+      border-radius: 18px;
+      font-size: 13px;
+      background: rgba(0,0,0,0.45);
+      color: rgba(255,255,255,0.75);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 20;
+    }
+
+    .cache-status.visible {
+      opacity: 1;
+    }
+    
+    /* Hidden state */
+    .hidden {
+      display: none !important;
+    }
+    
+    /* Connection status */
+    .connection-status {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    
+    .connection-status.connected {
+      background: rgba(76, 175, 80, 0.3);
+      color: #4CAF50;
+    }
+    
+    .connection-status.disconnected {
+      background: rgba(244, 67, 54, 0.3);
+      color: #f44336;
+    }
+  </style>
+</head>
+<body class="dark">
+  <div class="connection-status" id="connectionStatus">Connecting...</div>
+  <div class="cache-status" id="cacheStatus"></div>
+  
+  <!-- Welcome Screen -->
+  <div class="container welcome" id="welcomeScreen">
+    <div class="display-mark">▣</div>
+    <h1>OnScreen Signage</h1>
+    <p>Waiting for scheduled content</p>
+  </div>
+  
+  <!-- Bible Verse Display -->
+  <div class="container bible-display hidden" id="bibleScreen">
+    <div class="bible-reference" id="bibleReference">John 3:16</div>
+    <div class="bible-text" id="bibleText">For God so loved the world...</div>
+  </div>
+  
+  <!-- Lyrics Display -->
+  <div class="container lyrics-display hidden" id="lyricsScreen">
+    <div class="lyrics-title" id="lyricsTitle">Display Message</div>
+    <div class="lyrics-text" id="lyricsText">Your message appears here...</div>
+    <div class="lyrics-progress" id="lyricsProgress"></div>
+  </div>
+  
+  <!-- Schedule Display -->
+  <div class="container program-display hidden" id="programScreen">
+    <div class="program-header">Schedule</div>
+    <div class="program-current" id="programCurrent">Welcome Message</div>
+    <div class="program-next" id="programNext">Next: <span>Featured Promotion</span></div>
+  </div>
+
+  <!-- Media Display -->
+  <div class="container media-display hidden" id="mediaScreen">
+    <div class="media-stage" id="mediaStage">
+      <div class="collage-background" id="collageBackground"></div>
+      <div class="media-empty" id="mediaEmpty">No media playlist loaded</div>
+    </div>
+    <div class="ticker-overlay hidden" id="tickerOverlay">
+      <div class="ticker-time" id="tickerTime">00:00</div>
+      <div class="ticker-scroll">
+        <div class="ticker-track" id="tickerTrack">
+          <span id="tickerTextA"></span>
+          <span id="tickerTextB" aria-hidden="true"></span>
+        </div>
+      </div>
+      <div class="ticker-label" id="tickerLabelDisplay">Headlines</div>
+    </div>
+  </div>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const MEDIA_CACHE_NAME = 'onscreen-signage-media-v1';
+    const STATE_STORAGE_KEY = 'onscreen-signage-state';
+    const defaultState = {
+      mode: 'welcome',
+      bible: { book: '', chapter: '', verse: '', text: '' },
+      lyrics: { title: '', currentSlide: 0, slides: [] },
+      program: { currentIndex: 0, events: [] },
+      media: {
+        currentIndex: 0,
+        playlist: [],
+        zones: [],
+        fit: 'contain',
+        muted: true,
+        layout: 'single',
+        ticker: {
+          enabled: false,
+          showTime: true,
+          label: 'Headlines',
+          text: '',
+          speed: 28,
+          schedule: { mode: 'permanent', start: '08:00', end: '18:00' },
+          styles: {
+            barBg: '#030712',
+            scrollBg: '#0f172a',
+            textColor: '#ffffff',
+            timeBg: '#0f172a',
+            timeColor: '#93c5fd',
+            labelBg: '#2563eb',
+            labelColor: '#ffffff'
+          }
+        },
+        background: {
+          type: 'color',
+          color: '#000000',
+          imageId: '',
+          imageUrl: '',
+          imageFit: 'cover',
+          opacity: 1,
+          blur: 0
+        }
+      },
+      display: { fontSize: 48, theme: 'dark' }
+    };
+
+    let socket = null;
+    let currentState = loadSavedState() || defaultState;
+    let mediaTimer = null;
+    let renderedMediaKey = '';
+    let renderedTickerKey = '';
+    let lastRenderedLayout = '';
+    let currentMediaObjectUrls = [];
+    let localMediaIndex = currentState.media.currentIndex || 0;
+    let tickerClockTimer = null;
+    let tickerScheduleTimer = null;
+    
+    // DOM Elements
+    const connectionStatus = document.getElementById('connectionStatus');
+    const cacheStatus = document.getElementById('cacheStatus');
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const bibleScreen = document.getElementById('bibleScreen');
+    const lyricsScreen = document.getElementById('lyricsScreen');
+    const programScreen = document.getElementById('programScreen');
+    const mediaScreen = document.getElementById('mediaScreen');
+    const collageBackground = document.getElementById('collageBackground');
+    
+    const bibleReference = document.getElementById('bibleReference');
+    const bibleText = document.getElementById('bibleText');
+    
+    const lyricsTitle = document.getElementById('lyricsTitle');
+    const lyricsText = document.getElementById('lyricsText');
+    const lyricsProgress = document.getElementById('lyricsProgress');
+    
+    const programCurrent = document.getElementById('programCurrent');
+    const programNext = document.getElementById('programNext');
+
+    const mediaStage = document.getElementById('mediaStage');
+    const mediaEmpty = document.getElementById('mediaEmpty');
+    const tickerOverlay = document.getElementById('tickerOverlay');
+    const tickerTime = document.getElementById('tickerTime');
+    const tickerTrack = document.getElementById('tickerTrack');
+    const tickerTextA = document.getElementById('tickerTextA');
+    const tickerTextB = document.getElementById('tickerTextB');
+    const tickerLabelDisplay = document.getElementById('tickerLabelDisplay');
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch((err) => {
+        console.log('Service worker registration failed:', err);
+      });
+    }
+    
+    if (window.io) {
+      socket = io();
+
+      // Connection status
+      socket.on('connect', () => {
+        connectionStatus.textContent = 'Connected';
+        connectionStatus.className = 'connection-status connected';
+        setTimeout(() => {
+          connectionStatus.style.opacity = '0';
+        }, 3000);
+      });
+      
+      socket.on('disconnect', () => {
+        connectionStatus.textContent = 'Disconnected - offline playlist continues';
+        connectionStatus.className = 'connection-status disconnected';
+        connectionStatus.style.opacity = '0.7';
+      });
+
+      socket.on('state-update', (state) => {
+        currentState = normalizeState(state);
+        localMediaIndex = currentState.media.currentIndex || 0;
+        saveState(currentState);
+
+        if (currentState.mode === 'media') {
+          cacheMediaPlaylist(collectMediaItems(currentState));
+        }
+
+        renderState(currentState);
+      });
+    } else {
+      connectionStatus.textContent = 'Offline playback';
+      connectionStatus.className = 'connection-status disconnected';
+      connectionStatus.style.opacity = '0.7';
+    }
+
+    renderState(currentState);
+    
+    // Hide all screens
+    function hideAllScreens() {
+      welcomeScreen.classList.add('hidden');
+      bibleScreen.classList.add('hidden');
+      lyricsScreen.classList.add('hidden');
+      programScreen.classList.add('hidden');
+      mediaScreen.classList.add('hidden');
+    }
+
+    function normalizeState(state) {
+      return {
+        ...defaultState,
+        ...state,
+        bible: { ...defaultState.bible, ...(state.bible || {}) },
+        lyrics: { ...defaultState.lyrics, ...(state.lyrics || {}) },
+        program: { ...defaultState.program, ...(state.program || {}) },
+        media: {
+          ...defaultState.media,
+          ...(state.media || {}),
+          zones: Array.isArray(state.media && state.media.zones) ? state.media.zones : [],
+          background: {
+            ...defaultState.media.background,
+            ...((state.media && state.media.background) || {})
+          },
+          ticker: {
+            ...defaultState.media.ticker,
+            ...((state.media && state.media.ticker) || {}),
+            schedule: {
+              ...defaultState.media.ticker.schedule,
+              ...((state.media && state.media.ticker && state.media.ticker.schedule) || {})
+            },
+            styles: {
+              ...defaultState.media.ticker.styles,
+              ...((state.media && state.media.ticker && state.media.ticker.styles) || {})
+            }
+          }
+        },
+        display: { ...defaultState.display, ...(state.display || {}) }
+      };
+    }
+
+    function loadSavedState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STATE_STORAGE_KEY));
+        return saved ? normalizeState(saved) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function safeEmit(eventName, payload) {
+      if (socket && socket.connected) {
+        socket.emit(eventName, payload);
+        return true;
+      }
+
+      return false;
+    }
+
+    function showCacheStatus(message, persist = false) {
+      cacheStatus.textContent = message;
+      cacheStatus.classList.add('visible');
+
+      if (!persist) {
+        setTimeout(() => {
+          cacheStatus.classList.remove('visible');
+        }, 2500);
+      }
+    }
+
+    // Update display based on state
+    function renderState(state) {
+      // Update theme
+      document.body.className = state.display.theme || 'dark';
+      
+      // Update font sizes
+      bibleText.style.fontSize = state.display.fontSize + 'px';
+      lyricsText.style.fontSize = state.display.fontSize + 'px';
+      programCurrent.style.fontSize = state.display.fontSize + 'px';
+      
+      // Show appropriate screen
+      hideAllScreens();
+      
+      switch (state.mode) {
+        case 'welcome':
+          stopMediaPlayback();
+          welcomeScreen.classList.remove('hidden');
+          break;
+          
+        case 'bible':
+          stopMediaPlayback();
+          welcomeScreen.classList.remove('hidden');
+          break;
+          
+        case 'lyrics':
+          stopMediaPlayback();
+          lyricsScreen.classList.remove('hidden');
+          lyricsTitle.textContent = state.lyrics.title;
+          if (state.lyrics.slides && state.lyrics.slides.length > 0) {
+            lyricsText.textContent = state.lyrics.slides[state.lyrics.currentSlide] || '';
+            
+            // Update progress dots
+            lyricsProgress.innerHTML = '';
+            state.lyrics.slides.forEach((_, index) => {
+              const dot = document.createElement('div');
+              dot.className = 'dot' + (index === state.lyrics.currentSlide ? ' active' : '');
+              lyricsProgress.appendChild(dot);
+            });
+          }
+          break;
+          
+        case 'program':
+          stopMediaPlayback();
+          programScreen.classList.remove('hidden');
+          const events = state.program.events;
+          const currentIndex = state.program.currentIndex;
+          
+          if (events && events.length > 0) {
+            programCurrent.textContent = events[currentIndex] || '';
+            
+            if (currentIndex < events.length - 1) {
+              programNext.innerHTML = `Next: <span>${events[currentIndex + 1]}</span>`;
+              programNext.style.display = 'block';
+            } else {
+              programNext.style.display = 'none';
+            }
+          }
+          break;
+
+        case 'media':
+          mediaScreen.classList.remove('hidden');
+          applyCollageBackground(state.media.background);
+          renderTicker(state.media.ticker);
+          renderMedia(state);
+          break;
+      }
+    }
+
+    function stopMediaPlayback() {
+      clearTimeout(mediaTimer);
+      mediaTimer = null;
+      renderedMediaKey = '';
+      mediaStage.querySelectorAll('video').forEach((video) => {
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+      });
+      mediaStage.querySelectorAll('.media-zone').forEach((zone) => zone.remove());
+      mediaEmpty.classList.add('hidden');
+      tickerOverlay.classList.add('hidden');
+      stopTickerClock();
+      stopTickerSchedule();
+      lastRenderedLayout = '';
+
+      currentMediaObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+      currentMediaObjectUrls = [];
+    }
+
+    function applyCollageBackground(background = {}) {
+      mediaStage.style.backgroundColor = background.type === 'none' ? '#000000' : (background.color || '#000000');
+      collageBackground.style.backgroundImage = '';
+      collageBackground.style.opacity = '0';
+      collageBackground.style.filter = 'none';
+
+      if (background.type !== 'image' || !background.imageUrl) {
+        return;
+      }
+
+      const size = background.imageFit === 'stretch' ? '100% 100%' : (background.imageFit || 'cover');
+      collageBackground.style.backgroundImage = `url("${background.imageUrl}")`;
+      collageBackground.style.backgroundSize = size;
+      collageBackground.style.opacity = String(background.opacity ?? 1);
+      collageBackground.style.filter = `blur(${background.blur || 0}px)`;
+    }
+
+    function renderTicker(ticker = {}) {
+      const text = (ticker.text || '').trim();
+      const styles = ticker.styles || {};
+      if (!ticker.enabled || !text) {
+        tickerOverlay.classList.add('hidden');
+        renderedTickerKey = '';
+        stopTickerClock();
+        stopTickerSchedule();
+        return;
+      }
+
+      const tickerKey = `${ticker.showTime !== false}:${ticker.label || 'Headlines'}:${text}:${ticker.speed || 28}:${JSON.stringify(styles)}:${JSON.stringify(ticker.schedule || {})}`;
+      if (renderedTickerKey !== tickerKey) {
+        renderedTickerKey = tickerKey;
+        tickerOverlay.style.setProperty('--ticker-duration', `${ticker.speed || 28}s`);
+        tickerOverlay.style.setProperty('--ticker-bar-bg', styles.barBg || '#030712');
+        tickerOverlay.style.setProperty('--ticker-scroll-bg', styles.scrollBg || '#0f172a');
+        tickerOverlay.style.setProperty('--ticker-text-color', styles.textColor || '#ffffff');
+        tickerOverlay.style.setProperty('--ticker-time-bg', styles.timeBg || '#0f172a');
+        tickerOverlay.style.setProperty('--ticker-time-color', styles.timeColor || '#93c5fd');
+        tickerOverlay.style.setProperty('--ticker-label-bg', styles.labelBg || '#2563eb');
+        tickerOverlay.style.setProperty('--ticker-label-color', styles.labelColor || '#ffffff');
+        tickerTextA.textContent = text;
+        tickerTextB.textContent = text;
+        tickerTrack.style.animation = 'none';
+        tickerTrack.offsetHeight;
+        tickerTrack.style.animation = '';
+        tickerLabelDisplay.textContent = ticker.label || 'Headlines';
+        tickerTime.classList.toggle('hidden', ticker.showTime === false);
+        tickerOverlay.classList.toggle('no-time', ticker.showTime === false);
+      }
+
+      applyTickerSchedule(ticker);
+      stopTickerSchedule();
+      if ((ticker.schedule || {}).mode && ticker.schedule.mode !== 'permanent') {
+        tickerScheduleTimer = setInterval(() => applyTickerSchedule(ticker), 15000);
+      }
+
+      if (ticker.showTime !== false) {
+        updateTickerClock();
+        if (!tickerClockTimer) {
+          tickerClockTimer = setInterval(updateTickerClock, 1000);
+        }
+      } else {
+        stopTickerClock();
+      }
+    }
+
+    function applyTickerSchedule(ticker) {
+      tickerOverlay.classList.toggle('hidden', !isTickerVisibleNow(ticker.schedule || {}));
+    }
+
+    function isTickerVisibleNow(schedule = {}) {
+      if (!schedule.mode || schedule.mode === 'permanent') return true;
+
+      const inWindow = isTimeInWindow(schedule.start || '08:00', schedule.end || '18:00');
+      if (schedule.mode === 'show-window') return inWindow;
+      if (schedule.mode === 'hide-window') return !inWindow;
+      return true;
+    }
+
+    function isTimeInWindow(start, end) {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const startMinutes = timeToMinutes(start);
+      const endMinutes = timeToMinutes(end);
+
+      if (startMinutes === endMinutes) return true;
+      if (startMinutes < endMinutes) {
+        return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+      }
+      return currentMinutes >= startMinutes || currentMinutes < endMinutes;
+    }
+
+    function timeToMinutes(value) {
+      const [hours, minutes] = String(value || '00:00').split(':').map((part) => parseInt(part, 10));
+      return ((hours || 0) * 60) + (minutes || 0);
+    }
+
+    function updateTickerClock() {
+      const now = new Date();
+      tickerTime.textContent = now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function stopTickerClock() {
+      if (tickerClockTimer) {
+        clearInterval(tickerClockTimer);
+        tickerClockTimer = null;
+      }
+    }
+
+    function stopTickerSchedule() {
+      if (tickerScheduleTimer) {
+        clearInterval(tickerScheduleTimer);
+        tickerScheduleTimer = null;
+      }
+    }
+
+    async function cacheMediaPlaylist(playlist) {
+      if (!('caches' in window) || !playlist.length) return;
+
+      showCacheStatus('Caching media for offline playback...', true);
+      const cache = await caches.open(MEDIA_CACHE_NAME);
+      let cached = 0;
+
+      for (const item of playlist) {
+        try {
+          const cachedResponse = await cache.match(item.url);
+          if (!cachedResponse) {
+            const response = await fetch(item.url, { cache: 'reload' });
+            if (response.ok) {
+              await cache.put(item.url, response.clone());
+            }
+          }
+          cached++;
+          showCacheStatus(`Cached ${cached}/${playlist.length} media asset${playlist.length === 1 ? '' : 's'}...`, true);
+        } catch (err) {
+          console.log('Media cache failed:', item.url, err);
+        }
+      }
+
+      showCacheStatus('Media ready for offline playback.');
+    }
+
+    async function getMediaObjectUrl(item) {
+      if (!('caches' in window)) {
+        return item.url;
+      }
+
+      const cache = await caches.open(MEDIA_CACHE_NAME);
+      let response = await cache.match(item.url);
+
+      if (!response) {
+        response = await fetch(item.url);
+        if (response.ok) {
+          await cache.put(item.url, response.clone());
+        }
+      }
+
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    }
+
+    function collectMediaItems(state) {
+      const playlist = state.media.playlist || [];
+      const zones = (state.media.zones || []).filter(Boolean);
+      const byUrl = new Map();
+
+      [...playlist, ...zones].forEach((item) => {
+        if (item && item.url) {
+          byUrl.set(item.url, item);
+        }
+      });
+
+      if (state.media.background && state.media.background.imageUrl) {
+        byUrl.set(state.media.background.imageUrl, { url: state.media.background.imageUrl });
+      }
+
+      return [...byUrl.values()];
+    }
+
+    function clampMediaIndex(index, playlist) {
+      if (!playlist.length) return 0;
+      return Math.max(0, Math.min(index, playlist.length - 1));
+    }
+
+    function getLayoutZoneCount(layout) {
+      return {
+        single: 1,
+        split: 2,
+        triple: 3,
+        quad: 4,
+        feature: 3,
+        'sidebar-left': 3,
+        'sidebar-right': 3,
+        'top-strip': 3,
+        'bottom-strip': 3,
+        mosaic: 5,
+        six: 6
+      }[layout] || 1;
+    }
+
+    function getZoneItem(state, playlist, index, zoneIndex) {
+      const assigned = state.media.zones && state.media.zones[zoneIndex];
+      if (assigned) return assigned;
+      if (playlist.length === 0) return null;
+      if ((state.media.layout || 'single') === 'single') {
+        return playlist[index % playlist.length];
+      }
+      return playlist[zoneIndex % playlist.length];
+    }
+
+    async function renderMedia(state) {
+      const playlist = state.media.playlist || [];
+      const hasAssignedZones = (state.media.zones || []).some(Boolean);
+
+      if (playlist.length === 0 && !hasAssignedZones) {
+        clearTimeout(mediaTimer);
+        mediaTimer = null;
+        renderedMediaKey = '';
+        mediaStage.querySelectorAll('.media-zone').forEach((zone) => zone.remove());
+        mediaStage.className = 'media-stage layout-single';
+        mediaEmpty.classList.remove('hidden');
+        mediaEmpty.textContent = 'No media playlist loaded';
+        return;
+      }
+
+      const index = clampMediaIndex(state.media.currentIndex ?? localMediaIndex, playlist);
+      localMediaIndex = index;
+      const layout = state.media.layout || 'single';
+      const zoneCount = getLayoutZoneCount(layout);
+      const fit = state.media.fit || 'contain';
+      const playlistKey = playlist
+        .map((item) => `${item.id}:${item.url}:${item.duration}:${item.fit}`)
+        .join('|');
+      const zonesKey = (state.media.zones || [])
+        .map((item) => item ? `${item.id}:${item.url}:${item.duration}:${item.fit}` : 'auto')
+        .join('|');
+      const keyIndex = layout === 'single' ? index : 'fixed';
+      const key = `${layout}:${keyIndex}:${fit}:${state.media.muted}:${playlistKey}:${zonesKey}`;
+
+      if (renderedMediaKey === key) {
+        return;
+      }
+
+      clearTimeout(mediaTimer);
+      mediaTimer = null;
+      renderedMediaKey = key;
+      mediaEmpty.classList.add('hidden');
+      mediaStage.querySelectorAll('video').forEach((video) => {
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+      });
+      mediaStage.querySelectorAll('.media-zone').forEach((zone) => zone.remove());
+      currentMediaObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+      currentMediaObjectUrls = [];
+
+      const layoutChanged = lastRenderedLayout && lastRenderedLayout !== layout;
+      lastRenderedLayout = layout;
+      mediaStage.className = `media-stage layout-${layout}${layoutChanged ? ' template-transition' : ''}`;
+      mediaStage.style.setProperty('--zone-count', zoneCount);
+
+      const zones = [];
+      for (let zoneIndex = 0; zoneIndex < zoneCount; zoneIndex++) {
+        const item = getZoneItem(state, playlist, index, zoneIndex);
+        const zone = document.createElement('div');
+        zone.className = 'media-zone';
+        mediaStage.appendChild(zone);
+        if (item) {
+          zones.push(renderMediaZone(zone, item, state, key));
+        }
+      }
+
+      await Promise.all(zones);
+
+      if (renderedMediaKey !== key) return;
+
+      setTimeout(() => {
+        mediaStage.classList.remove('template-transition');
+      }, 520);
+
+      const timingItem = playlist[index] || (state.media.zones || []).find(Boolean);
+      if (layout === 'single') {
+        const duration = Math.max(1, parseInt((timingItem && timingItem.duration) || 10, 10));
+        mediaTimer = setTimeout(nextMediaItem, duration * 1000);
+      }
+    }
+
+    async function renderMediaZone(zone, item, state, renderKey) {
+      const fit = state.media.fit || item.fit || 'contain';
+      let source = item.url;
+
+      try {
+        source = await getMediaObjectUrl(item);
+      } catch (err) {
+        console.log('Falling back to network media URL:', err);
+      }
+
+      if (renderedMediaKey !== renderKey) {
+        if (source.startsWith('blob:')) URL.revokeObjectURL(source);
+        return;
+      }
+
+      if (source.startsWith('blob:')) {
+        currentMediaObjectUrls.push(source);
+      }
+
+      if (item.type === 'video') {
+        const video = document.createElement('video');
+        video.src = source;
+        video.muted = state.media.muted !== false;
+        video.loop = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.style.objectFit = fit;
+        zone.appendChild(video);
+        video.play().catch(() => {
+          showCacheStatus('Tap the display once to allow video playback.');
+        });
+      } else {
+        const image = document.createElement('img');
+        image.src = source;
+        image.alt = item.name || '';
+        image.style.objectFit = fit;
+        zone.appendChild(image);
+      }
+    }
+
+    function nextMediaItem() {
+      const playlist = currentState.media.playlist || [];
+      if (!playlist.length) return;
+
+      localMediaIndex = (localMediaIndex + 1) % playlist.length;
+      currentState = normalizeState({
+        ...currentState,
+        media: {
+          ...currentState.media,
+          currentIndex: localMediaIndex
+        }
+      });
+      saveState(currentState);
+      renderState(currentState);
+    }
+
+    function previousMediaItem() {
+      const playlist = currentState.media.playlist || [];
+      if (!playlist.length) return;
+
+      localMediaIndex = (localMediaIndex - 1 + playlist.length) % playlist.length;
+      currentState = normalizeState({
+        ...currentState,
+        media: {
+          ...currentState.media,
+          currentIndex: localMediaIndex
+        }
+      });
+      saveState(currentState);
+      renderState(currentState);
+    }
+    
+    // Double click to toggle fullscreen
+    document.addEventListener('dblclick', toggleFullScreen);
+    
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch((e) => {
+          console.log(`Error attempting to enable full-screen mode: ${e.message} (${e.name})`);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // Keyboard navigation for manual testing
+    document.addEventListener('keydown', (e) => {
+      // 'f' key for fullscreen
+      if (e.key === 'f' || e.key === 'F') {
+        toggleFullScreen();
+      }
+      
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (currentState.mode === 'media') {
+          nextMediaItem();
+        } else {
+          safeEmit('lyrics-navigate', 'next');
+        }
+      } else if (e.key === 'ArrowLeft') {
+        if (currentState.mode === 'media') {
+          previousMediaItem();
+        } else {
+          safeEmit('lyrics-navigate', 'prev');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

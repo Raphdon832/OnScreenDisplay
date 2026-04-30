@@ -1,0 +1,9 @@
+node_modules/
+.env
+.DS_Store
+
+# Runtime state and uploaded media should live on persistent storage in production.
+data/display-state.json
+data/media.json
+data/songs.json
+uploads/media/*

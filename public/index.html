@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnScreen Signage</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+    }
+    
+    .display-mark {
+      font-size: 80px;
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      font-size: 48px;
+      font-weight: 300;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      font-size: 20px;
+      opacity: 0.8;
+      margin-bottom: 40px;
+    }
+    
+    .links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    a {
+      display: inline-block;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 18px;
+      transition: all 0.3s ease;
+    }
+    
+    a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .instructions {
+      margin-top: 60px;
+      text-align: left;
+      background: rgba(255,255,255,0.05);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 600px;
+    }
+    
+    .instructions h3 {
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+    
+    .instructions ol {
+      padding-left: 20px;
+      line-height: 2;
+      opacity: 0.9;
+    }
+    
+    .instructions code {
+      background: rgba(255,255,255,0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="display-mark">▣</div>
+  <h1>OnScreen Signage</h1>
+  <p>Manage media playlists, text slides, and scheduled notices for digital displays.</p>
+  
+  <div class="links">
+    <a href="/display.html" target="_blank">Open Display Player</a>
+    <a href="/control.html" target="_blank">Sign in to Control Panel</a>
+  </div>
+  
+  <div class="instructions">
+    <h3>How to Use:</h3>
+    <ol>
+      <li>Open the <strong>Display Player</strong> on your screen or media device (full screen with <code>F11</code>)</li>
+      <li>Open the <strong>Control Panel</strong> on your phone, tablet, or computer</li>
+      <li>Use the control panel to:
+        <ul>
+          <li>Upload image and video assets</li>
+          <li>Build a repeatable media playlist</li>
+          <li>Show text slides or scheduled notices</li>
+        </ul>
+      </li>
+      <li>Use arrow keys <code>←</code> <code>→</code> to navigate, <code>Esc</code> to clear</li>
+    </ol>
+  </div>
+</body>
+</html>

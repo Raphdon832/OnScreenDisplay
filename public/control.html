@@ -1,0 +1,3051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Panel - OnScreen Signage</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com/css2">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Modern Deep Blue Palette */
+      --bg-body: #0f172a;       /* Slate 900 */
+      --bg-sidebar: #1e293b;    /* Slate 800 */
+      --bg-card: #1e293b;
+      --bg-input: #334155;      /* Slate 700 */
+      --bg-hover: #334155;
+      
+      --primary: #3b82f6;       /* Blue 500 */
+      --primary-dark: #2563eb;  /* Blue 600 */
+      --accent: #0ea5e9;        /* Sky 500 */
+      
+      --text-main: #f8fafc;     /* Slate 50 */
+      --text-secondary: #94a3b8;/* Slate 400 */
+      
+      --border-color: #334155;
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.3);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Header */
+    .header {
+      background: var(--bg-sidebar);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: -0.025em;
+    }
+    
+    .header p {
+      display: none;
+    }
+    
+    .connection-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .connection-badge.connected {
+      background: rgba(34, 197, 94, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .connection-badge.disconnected {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logout-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: rgba(15, 23, 42, 0.55);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .logout-btn:hover {
+      border-color: rgba(248, 250, 252, 0.28);
+      color: var(--text-main);
+      background: rgba(51, 65, 85, 0.75);
+    }
+
+    .logout-btn .material-icons-round {
+      font-size: 18px;
+    }
+    
+    .main-container {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: calc(100vh - 65px);
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-sidebar);
+      padding: 24px 16px;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sidebar h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      padding-left: 12px;
+      font-weight: 600;
+    }
+    
+    .mode-btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 4px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    
+    .mode-btn:hover {
+      background: rgba(255,255,255,0.03);
+      color: var(--text-main);
+    }
+    
+    .mode-btn.active {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--primary);
+      border-color: rgba(59, 130, 246, 0.2);
+    }
+    
+    .mode-btn .icon {
+      margin-right: 12px;
+      font-size: 20px;
+    }
+    
+    .quick-actions {
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .clear-btn {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: var(--radius-sm);
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .clear-btn:hover {
+      background: #ef4444;
+      color: white;
+    }
+    
+    /* Content Area */
+    .content {
+      padding: 32px 40px;
+      background: var(--bg-body);
+    }
+    
+    .panel {
+      display: none;
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .panel.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .panel h2 {
+      font-size: 24px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+    
+    /* Input Styles - Modern & Clean */
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+
+    .form-group:focus-within label {
+      color: var(--primary);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    
+    input, textarea, select {
+      width: 100%;
+      padding: 16px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08); /* Subtle border */
+      border-radius: var(--radius-md);
+      background: rgba(30, 41, 59, 0.5); /* Semi-transparent Look */
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px; /* Larger font for modern feel */
+      font-weight: 400;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05); /* Inner shadow for depth */
+      backdrop-filter: blur(10px); /* Glassmorphism touch */
+    }
+    
+    input::placeholder, textarea::placeholder {
+      color: rgba(148, 163, 184, 0.5);
+    }
+    
+    input:hover, textarea:hover, select:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      background: #1e293b;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 20px center;
+      background-size: 20px;
+      padding-right: 48px;
+      cursor: pointer;
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 160px;
+      line-height: 1.6;
+    }
+    
+    /* Buttons */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: var(--bg-input);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+    
+    .btn-secondary:hover {
+      background: #475569;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    
+    /* Media Library */
+    .media-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .file-input {
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    .upload-status {
+      color: var(--text-secondary);
+      font-size: 13px;
+      min-height: 20px;
+      margin-bottom: 16px;
+    }
+
+    .layout-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .layout-btn {
+      min-height: 72px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: rgba(15, 23, 42, 0.6);
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      place-items: center;
+      transition: all 0.2s;
+    }
+
+    .layout-btn:hover,
+    .layout-btn.active {
+      color: var(--text-main);
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.12);
+    }
+
+    .layout-preview {
+      width: 58px;
+      height: 34px;
+      display: grid;
+      gap: 3px;
+    }
+
+    .layout-preview span {
+      display: block;
+      background: var(--primary);
+      border-radius: 2px;
+      opacity: 0.85;
+    }
+
+    .layout-preview.single { grid-template-columns: 1fr; }
+    .layout-preview.split { grid-template-columns: 1fr 1fr; }
+    .layout-preview.triple { grid-template-columns: 1fr 1fr 1fr; }
+    .layout-preview.quad { grid-template-columns: 1fr 1fr; }
+    .layout-preview.feature {
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .layout-preview.feature span:first-child {
+      grid-row: span 2;
+    }
+
+    .layout-preview.sidebar-left,
+    .layout-preview.sidebar-right,
+    .layout-preview.top-strip,
+    .layout-preview.bottom-strip {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .layout-preview.sidebar-left span:first-child,
+    .layout-preview.sidebar-right span:first-child {
+      grid-row: span 2;
+    }
+
+    .layout-preview.sidebar-right {
+      direction: rtl;
+    }
+
+    .layout-preview.top-strip span:first-child,
+    .layout-preview.bottom-strip span:first-child {
+      grid-column: span 2;
+    }
+
+    .layout-preview.bottom-strip span:first-child {
+      order: 3;
+    }
+
+    .layout-preview.mosaic {
+      grid-template-columns: 1.5fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .layout-preview.mosaic span:first-child {
+      grid-row: span 2;
+    }
+
+    .layout-preview.six {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+    }
+
+    .layout-btn strong {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .ticker-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .ticker-toggle input {
+      width: auto;
+      accent-color: var(--primary);
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .color-control {
+      background: rgba(15, 23, 42, 0.42);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+    }
+
+    .color-control label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .color-control input[type="color"] {
+      width: 100%;
+      height: 42px;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .range-control {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .range-control input[type="range"] {
+      accent-color: var(--primary);
+    }
+
+    .range-control span {
+      min-width: 36px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .zone-assignment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .zone-assignment {
+      background: rgba(15, 23, 42, 0.42);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+
+    .zone-assignment label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .zone-assignment select {
+      padding: 10px 36px 10px 12px;
+      font-size: 13px;
+      border-radius: var(--radius-sm);
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .media-card {
+      background: #1e293b;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .media-thumb {
+      aspect-ratio: 16 / 9;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: var(--text-secondary);
+    }
+
+    .media-thumb img,
+    .media-thumb video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .media-details {
+      padding: 12px;
+    }
+
+    .media-title {
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .media-meta {
+      color: var(--text-secondary);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .media-actions {
+      display: flex;
+      gap: 8px;
+      padding: 0 12px 12px;
+    }
+
+    .playlist-empty {
+      color: var(--text-secondary);
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .media-duration {
+      width: 90px;
+      padding: 8px 10px;
+      font-size: 13px;
+      border-radius: var(--radius-sm);
+    }
+
+    .muted-text {
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Preview Cards (Text/Events/Media) */
+    .slides-container, .events-container, .playlist-container {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .slide-item, .event-item, .playlist-item {
+      background: #1e293b;
+      padding: 16px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .slide-item:hover, .event-item:hover, .playlist-item:hover {
+      border-color: var(--border-color);
+      transform: translateX(2px);
+    }
+    
+    .slide-item.active, .event-item.active, .playlist-item.active {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--primary);
+    }
+    
+    .slide-number, .event-number, .playlist-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-body);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .active .slide-number, .active .event-number, .active .playlist-number {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .slide-preview {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    
+    .active .slide-preview {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+    
+    .event-item.completed { opacity: 0.5; }
+    
+    /* Navigation Large Controls */
+    .nav-controls {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin: 40px 0;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .nav-btn {
+      width: 64px;
+      height: 64px;
+      border: none;
+      border-radius: 20px;
+      background: var(--bg-input);
+      color: var(--text-main);
+      font-size: 28px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .nav-btn:hover {
+      background: var(--bg-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .nav-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .delete-btn {
+      padding: 6px 12px;
+      background: rgba(239, 68, 68, 0.1);
+      border: none;
+      border-radius: 4px;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .delete-btn:hover {
+      background: #ef4444;
+      color: white;
+    }
+    
+    /* Settings Cards */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    
+    .setting-card {
+      background: #1e293b;
+      padding: 24px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .setting-card h4 {
+      margin-bottom: 20px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    
+    .theme-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    
+    .theme-btn {
+      padding: 16px;
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .theme-btn.active {
+      border-color: var(--primary);
+      position: relative;
+    }
+    
+    .theme-btn.active::after {
+      content: '✓';
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--primary);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      color: white;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #1e293b;
+    }
+    
+    .theme-btn.dark { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; }
+    .theme-btn.light { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); color: #0f172a; }
+    .theme-btn.brand { background: linear-gradient(135deg, #4f46e5 0%, #0f766e 100%); color: white; }
+    .theme-btn.nature { background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); color: white; }
+    
+    .font-slider { width: 100%; margin-top: 12px; accent-color: var(--primary); }
+    
+    .font-preview {
+      text-align: center;
+      margin-top: 24px;
+      padding: 24px;
+      background: var(--bg-body);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Preview Window */
+    .preview-window {
+      background: #000;
+      border-radius: var(--radius-md);
+      padding: 32px;
+      margin-top: 32px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .preview-window h4 {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.4);
+      margin: 0;
+    }
+    
+    .preview-content {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    /* Utility & Specific Components */
+    .add-event-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .add-event-row input {
+      flex: 1;
+    }
+
+    /* Badges */
+    .kjv-badge, .offline-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: 8px;
+    }
+    
+    .kjv-badge { background: rgba(234, 179, 8, 0.2); color: #fbbf24; border: 1px solid rgba(234, 179, 8, 0.3); }
+    /* Mobile Responsiveness */
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 8px;
+    }
+    
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 900;
+      backdrop-filter: blur(2px);
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        padding: 12px 16px;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .main-container {
+        display: block;
+      }
+      
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 280px;
+        height: 100vh;
+        z-index: 1000;
+        box-shadow: 4px 0 16px rgba(0,0,0,0.3);
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .sidebar.active {
+        left: 0;
+      }
+      
+      .sidebar-overlay.active {
+        display: block;
+      }
+      
+      .content {
+        padding: 16px;
+        padding-top: 24px;
+        min-height: calc(100vh - 60px);
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      
+      .theme-options {
+        grid-template-columns: 1fr; 
+      }
+      
+      .nav-controls {
+        gap: 16px;
+      }
+      
+      .nav-btn {
+        width: 56px;
+        height: 56px;
+        font-size: 24px;
+      }
+      
+      .preview-window {
+        padding: 16px;
+        min-height: 160px;
+      }
+      
+      .panel h2 {
+        font-size: 20px;
+        margin-bottom: 24px;
+      }
+
+      /* Adjust quick verse input */
+      .quick-input-row {
+        flex-direction: column;
+      }
+      
+      .kjv-badge, .offline-badge {
+        display: none; /* Save space in header on mobile */
+      }
+      
+      .header h1 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px;
+      }
+
+      .logout-text {
+        display: none;
+      }
+    }
+      /* End of Mobile Responsiveness */
+      
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 15px;
+      line-height: 1.6;
+      border: 1px solid transparent;
+    }
+    
+    .verse-item:hover {
+      border-color: var(--border-color);
+      transform: translateX(4px);
+    }
+    
+    .verse-item.selected {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+      border-left: 3px solid var(--primary);
+    }
+    
+    .verse-item .verse-num {
+      font-weight: 700;
+      color: var(--primary);
+      margin-right: 12px;
+      display: inline-block;
+      width: 24px;
+    }
+    
+    /* Loading Spinner */
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(59, 130, 246, 0.3);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="header">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <span class="material-icons-round">menu</span>
+      </button>
+      <div class="header-branding">
+        <span class="material-icons-round" style="color: var(--primary);">connected_tv</span>
+        <h1>OnScreen Signage</h1>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="connection-badge" id="connectionBadge">Connecting...</div>
+      <button class="logout-btn" onclick="logout()" title="Sign out">
+        <span class="material-icons-round">logout</span>
+        <span class="logout-text">Sign out</span>
+      </button>
+    </div>
+  </div>
+  
+  <div class="main-container">
+    <div class="sidebar">
+      <h3>Signage Tools</h3>
+      <button class="mode-btn active" data-mode="media" onclick="setActivePanel('media')">
+        <span class="material-icons-round icon">perm_media</span> Media
+      </button>
+      <button class="mode-btn" data-mode="lyrics" onclick="setActivePanel('lyrics')">
+        <span class="material-icons-round icon">text_fields</span> Text Slides
+      </button>
+      <button class="mode-btn" data-mode="program" onclick="setActivePanel('program')">
+        <span class="material-icons-round icon">event_note</span> Schedule
+      </button>
+      <button class="mode-btn" data-mode="settings" onclick="setActivePanel('settings')">
+        <span class="material-icons-round icon">settings</span> Settings
+      </button>
+      
+      <div class="quick-actions">
+        <h3>Quick Actions</h3>
+        <button class="clear-btn" onclick="clearDisplay()">
+          <span class="material-icons-round">block</span> Clear Display
+        </button>
+      </div>
+    </div>
+    
+    <div class="content">
+      <!-- Media Panel -->
+      <div class="panel active" id="mediaPanel">
+        <h2><span class="material-icons-round">perm_media</span> Media Playlist</h2>
+
+        <div class="media-toolbar">
+          <input type="file" class="file-input" id="mediaFileInput" accept="image/*,video/*" multiple>
+          <button class="btn btn-primary" onclick="uploadMediaFiles()">
+            <span class="material-icons-round">upload</span> Upload
+          </button>
+        </div>
+        <div class="upload-status" id="mediaUploadStatus"></div>
+
+        <div class="settings-grid">
+          <div class="setting-card">
+            <h4>Available Assets</h4>
+            <p class="muted-text">Upload images or videos, then add them to the active playlist for the display player.</p>
+            <div class="media-grid" id="mediaLibraryGrid"></div>
+          </div>
+
+          <div class="setting-card">
+            <h4>Screen Layout</h4>
+            <p class="muted-text">Choose how many media zones appear at once. The playlist fills each zone from the current item onward.</p>
+            <div class="layout-options" id="layoutOptions">
+              <button class="layout-btn active" data-layout="single" onclick="setMediaLayout('single')">
+                <div class="layout-preview single"><span></span></div>
+                <strong>Single</strong>
+              </button>
+              <button class="layout-btn" data-layout="split" onclick="setMediaLayout('split')">
+                <div class="layout-preview split"><span></span><span></span></div>
+                <strong>Split</strong>
+              </button>
+              <button class="layout-btn" data-layout="triple" onclick="setMediaLayout('triple')">
+                <div class="layout-preview triple"><span></span><span></span><span></span></div>
+                <strong>Three</strong>
+              </button>
+              <button class="layout-btn" data-layout="quad" onclick="setMediaLayout('quad')">
+                <div class="layout-preview quad"><span></span><span></span><span></span><span></span></div>
+                <strong>Four</strong>
+              </button>
+              <button class="layout-btn" data-layout="feature" onclick="setMediaLayout('feature')">
+                <div class="layout-preview feature"><span></span><span></span><span></span></div>
+                <strong>Feature</strong>
+              </button>
+              <button class="layout-btn" data-layout="sidebar-left" onclick="setMediaLayout('sidebar-left')">
+                <div class="layout-preview sidebar-left"><span></span><span></span><span></span></div>
+                <strong>Left Rail</strong>
+              </button>
+              <button class="layout-btn" data-layout="sidebar-right" onclick="setMediaLayout('sidebar-right')">
+                <div class="layout-preview sidebar-right"><span></span><span></span><span></span></div>
+                <strong>Right Rail</strong>
+              </button>
+              <button class="layout-btn" data-layout="top-strip" onclick="setMediaLayout('top-strip')">
+                <div class="layout-preview top-strip"><span></span><span></span><span></span></div>
+                <strong>Top Strip</strong>
+              </button>
+              <button class="layout-btn" data-layout="bottom-strip" onclick="setMediaLayout('bottom-strip')">
+                <div class="layout-preview bottom-strip"><span></span><span></span><span></span></div>
+                <strong>Bottom Strip</strong>
+              </button>
+              <button class="layout-btn" data-layout="mosaic" onclick="setMediaLayout('mosaic')">
+                <div class="layout-preview mosaic"><span></span><span></span><span></span><span></span><span></span></div>
+                <strong>Mosaic</strong>
+              </button>
+              <button class="layout-btn" data-layout="six" onclick="setMediaLayout('six')">
+                <div class="layout-preview six"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <strong>Six</strong>
+              </button>
+            </div>
+            <div class="zone-assignment-grid" id="zoneAssignmentGrid"></div>
+          </div>
+
+          <div class="setting-card">
+            <h4>Ticker Overlay</h4>
+            <label class="ticker-toggle">
+              <input type="checkbox" id="tickerEnabled">
+              Show scrolling ticker
+            </label>
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+              <div class="form-group">
+                <label>Ticker Label</label>
+                <input type="text" id="tickerLabel" placeholder="Headlines" value="Headlines">
+              </div>
+              <div class="form-group">
+                <label>Clock</label>
+                <select id="tickerShowTime">
+                  <option value="true">Show Time</option>
+                  <option value="false">Hide Time</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Scrolling Text</label>
+              <textarea id="tickerText" placeholder="Type the scrolling message here..." style="min-height: 110px;"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Ticker Speed</label>
+              <div class="range-control">
+                <input type="range" id="tickerSpeed" min="8" max="120" value="28">
+                <span id="tickerSpeedValue">28s</span>
+              </div>
+            </div>
+            <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
+              <div class="form-group">
+                <label>Schedule</label>
+                <select id="tickerScheduleMode">
+                  <option value="permanent">Permanent</option>
+                  <option value="show-window">Show During Time</option>
+                  <option value="hide-window">Hide During Time</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Start Time</label>
+                <input type="time" id="tickerScheduleStart" value="08:00">
+              </div>
+              <div class="form-group">
+                <label>End Time</label>
+                <input type="time" id="tickerScheduleEnd" value="18:00">
+              </div>
+            </div>
+            <div class="color-grid">
+              <div class="color-control">
+                <label>Bar Background</label>
+                <input type="color" id="tickerBarBg" value="#030712">
+              </div>
+              <div class="color-control">
+                <label>Scroll Background</label>
+                <input type="color" id="tickerScrollBg" value="#0f172a">
+              </div>
+              <div class="color-control">
+                <label>Scrolling Text</label>
+                <input type="color" id="tickerTextColor" value="#ffffff">
+              </div>
+              <div class="color-control">
+                <label>Time Background</label>
+                <input type="color" id="tickerTimeBg" value="#0f172a">
+              </div>
+              <div class="color-control">
+                <label>Time Text</label>
+                <input type="color" id="tickerTimeColor" value="#93c5fd">
+              </div>
+              <div class="color-control">
+                <label>Label Background</label>
+                <input type="color" id="tickerLabelBg" value="#2563eb">
+              </div>
+              <div class="color-control">
+                <label>Label Text</label>
+                <input type="color" id="tickerLabelColor" value="#ffffff">
+              </div>
+            </div>
+            <p class="muted-text">This overlays the media layout and keeps scrolling across the bottom of the display.</p>
+          </div>
+
+          <div class="setting-card">
+            <h4>Collage Background</h4>
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+              <div class="form-group">
+                <label>Background Type</label>
+                <select id="collageBgType">
+                  <option value="color">Color</option>
+                  <option value="image">Image</option>
+                  <option value="none">None</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Background Color</label>
+                <input type="color" id="collageBgColor" value="#000000">
+              </div>
+            </div>
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+              <div class="form-group">
+                <label>Image Asset</label>
+                <select id="collageBgImage">
+                  <option value="">Select image...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Image Fit</label>
+                <select id="collageBgImageFit">
+                  <option value="cover">Cover</option>
+                  <option value="contain">Contain</option>
+                  <option value="stretch">Stretch</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+              <div class="form-group">
+                <label>Image Opacity</label>
+                <div class="range-control">
+                  <input type="range" id="collageBgOpacity" min="0" max="100" value="100">
+                  <span id="collageBgOpacityValue">100%</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Image Blur</label>
+                <div class="range-control">
+                  <input type="range" id="collageBgBlur" min="0" max="24" value="0">
+                  <span id="collageBgBlurValue">0px</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-card">
+            <h4>Active Playlist</h4>
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+              <div class="form-group">
+                <label>Playback Fit</label>
+                <select id="mediaFitSelect">
+                  <option value="contain">Contain</option>
+                  <option value="cover">Cover</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Video Audio</label>
+                <select id="mediaMutedSelect">
+                  <option value="true">Muted</option>
+                  <option value="false">Audio On</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="btn-group" style="margin-top: 0;">
+              <button class="btn btn-primary" onclick="startMediaPlaylist()">
+                <span class="material-icons-round">restart_alt</span> Restart from First
+              </button>
+              <button class="btn btn-secondary" onclick="clearMediaPlaylist()">
+                <span class="material-icons-round">playlist_remove</span> Clear
+              </button>
+            </div>
+
+            <div class="nav-controls">
+              <button class="nav-btn" id="prevMediaBtn" onclick="navigateMedia('prev')">◀</button>
+              <button class="nav-btn" id="nextMediaBtn" onclick="navigateMedia('next')">▶</button>
+            </div>
+
+            <div class="playlist-container" id="mediaPlaylistContainer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bible Panel -->
+      <div class="panel" id="biblePanel">
+        <h2>📖 Bible Verses <span class="kjv-badge">KJV</span><span class="offline-badge" id="offlineBadge">📴 Offline Ready</span></h2>
+        
+        <div class="book-info" id="bookInfo">
+          <span>Selected: </span><strong id="bookInfoText">Genesis</strong>
+          <span> • </span><span id="bookChapterCount">50 chapters</span>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Book</label>
+            <div class="autocomplete-wrapper">
+              <input type="text" 
+                     class="autocomplete-input" 
+                     id="bibleBookInput" 
+                     placeholder="Type book name..."
+                     autocomplete="off"
+                     oninput="onBookInput()"
+                     onfocus="showBookDropdown()"
+                     onkeydown="handleBookKeydown(event)">
+              <button class="autocomplete-clear" onclick="clearBookInput()" id="bookClearBtn" style="display:none;">×</button>
+              <div class="autocomplete-dropdown" id="bookDropdown"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Chapter</label>
+            <div class="number-input-wrapper">
+              <button class="number-btn" onclick="adjustChapter(-1)">−</button>
+              <input type="number" 
+                     class="autocomplete-input number-input" 
+                     id="bibleChapter" 
+                     placeholder="Ch"
+                     min="1"
+                     oninput="onChapterInput()"
+                     onchange="onChapterChange()">
+              <button class="number-btn" onclick="adjustChapter(1)">+</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Verse(s)</label>
+            <div class="verse-input-row">
+              <div class="number-input-wrapper">
+                <button class="number-btn" onclick="adjustVerse(-1, 'start')">−</button>
+                <input type="number" 
+                       class="autocomplete-input number-input" 
+                       id="bibleVerse" 
+                       placeholder="V"
+                       min="1"
+                       oninput="onVerseInput()"
+                       onchange="onVerseChange()">
+                <button class="number-btn" onclick="adjustVerse(1, 'start')">+</button>
+              </div>
+              <span class="verse-separator">to</span>
+              <div class="number-input-wrapper">
+                <input type="number" 
+                       class="autocomplete-input number-input" 
+                       id="bibleVerseEnd" 
+                       placeholder="—"
+                       min="1"
+                       oninput="onVerseInput()"
+                       onchange="onVerseChange()">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="quick-verse-input">
+          <label>⚡ Quick reference (e.g., "John 3:16" or "Rom 8:28-30"):</label>
+          <div class="quick-input-row">
+            <input type="text" id="quickVerseInput" placeholder="Type and press Enter..." onkeypress="handleQuickVerseKeypress(event)">
+            <button class="btn btn-secondary" onclick="parseQuickVerse()">Go</button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Verse Text <span class="auto-loaded" id="autoLoadedBadge" style="display:none;">✓ Auto-loaded from KJV</span></label>
+          <textarea id="bibleText" placeholder="Select a verse above to auto-load, or type manually..."></textarea>
+        </div>
+        
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="displayBibleVerse()">
+            Display Verse
+          </button>
+          <button class="btn btn-secondary" onclick="fetchVerse()">
+            🔄 Reload Verse
+          </button>
+        </div>
+        
+        <div class="preview-window">
+          <h4>Preview</h4>
+          <div class="preview-content" id="biblePreview">
+            Select a verse to preview
+          </div>
+        </div>
+        
+        <div class="chapter-verses" id="chapterVersesContainer" style="display:none;">
+          <h4>📜 Chapter Verses <button class="btn-small" onclick="toggleChapterView()">Hide</button></h4>
+          <div id="chapterVersesList"></div>
+        </div>
+      </div>
+      
+      <!-- Text Slides Panel -->
+      <div class="panel" id="lyricsPanel">
+        <h2><span class="material-icons-round">text_fields</span> Text Slides</h2>
+        
+        <!-- Message Library Controls -->
+        <div class="quick-verse-input" style="padding: 16px; margin-bottom: 24px;">
+          <label>Message Library</label>
+          <div class="quick-input-row" style="flex-direction: row; gap: 8px;">
+            <select id="songLibrarySelect" onchange="selectSongFromLibrary(this.value)" style="flex: 1;">
+              <option value="">Select a saved message...</option>
+            </select>
+            <button class="btn btn-secondary" onclick="refreshSongLibrary()" title="Refresh Library">🔄</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Slide Set Title</label>
+          <input type="text" id="lyricsTitle" placeholder="e.g., Weekend Promotion" value="Welcome Message">
+        </div>
+        
+        <div class="form-group">
+          <label>Text Slides (separate slides with blank lines)</label>
+          <textarea id="lyricsText" placeholder="Enter display text here. Use blank lines to separate slides...">Welcome to our location
+We are glad you are here
+
+Ask our team about today's featured services
+
+Follow the on-screen notices for current updates</textarea>
+        </div>
+        
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="loadLyrics()">
+            Load to Screen
+          </button>
+          <button class="btn btn-secondary" onclick="saveSongToLibrary()">
+            💾 Save Message
+          </button>
+          <button class="delete-btn" onclick="deleteSongFromLibrary()" style="margin-left: auto;">
+            🗑️ Delete
+          </button>
+        </div>
+        
+        <div class="nav-controls">
+          <button class="nav-btn" id="prevSlideBtn" onclick="navigateLyrics('prev')">◀</button>
+          <button class="nav-btn" id="nextSlideBtn" onclick="navigateLyrics('next')">▶</button>
+        </div>
+        
+        <div class="slides-container" id="slidesContainer">
+          <!-- Slides will be dynamically generated -->
+        </div>
+      </div>
+      
+      <!-- Schedule Panel -->
+      <div class="panel" id="programPanel">
+        <h2><span class="material-icons-round">event_note</span> Schedule</h2>
+        
+        <div class="add-event-row">
+          <input type="text" id="newEventInput" placeholder="Add scheduled item..." onkeypress="handleEventKeypress(event)">
+          <button class="btn btn-primary" onclick="addEvent()">Add</button>
+        </div>
+        
+        <div class="nav-controls">
+          <button class="nav-btn" id="prevEventBtn" onclick="navigateProgram('prev')">◀</button>
+          <button class="nav-btn" id="nextEventBtn" onclick="navigateProgram('next')">▶</button>
+        </div>
+        
+        <div id="eventsContainer">
+          <!-- Events will be dynamically generated -->
+        </div>
+        
+        <div class="btn-group" style="margin-top: 20px;">
+          <button class="btn btn-secondary" onclick="loadSampleProgram()">
+            Load Sample Schedule
+          </button>
+        </div>
+      </div>
+      
+      <!-- Settings Panel -->
+      <div class="panel" id="settingsPanel">
+        <h2>⚙️ Display Settings</h2>
+        
+        <div class="settings-grid">
+          <div class="setting-card">
+            <h4>Theme</h4>
+            <div class="theme-options">
+              <button class="theme-btn dark active" onclick="setTheme('dark')">Dark</button>
+              <button class="theme-btn light" onclick="setTheme('light')">Light</button>
+              <button class="theme-btn brand" onclick="setTheme('brand')">Brand</button>
+              <button class="theme-btn nature" onclick="setTheme('nature')">Nature</button>
+            </div>
+          </div>
+          
+          <div class="setting-card">
+            <h4>Font Size: <span id="fontSizeValue">48</span>px</h4>
+            <input type="range" class="font-slider" id="fontSizeSlider" min="24" max="96" value="48" oninput="updateFontSize(this.value)">
+            <div class="font-preview" id="fontPreview" style="font-size: 24px;">
+              Preview Text
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    
+    let currentState = {
+      mode: 'welcome',
+      bible: { book: '', chapter: '', verse: '', text: '' },
+      lyrics: { title: '', currentSlide: 0, slides: [] },
+      program: { currentIndex: 0, events: [] },
+      media: {
+        currentIndex: 0,
+        playlist: [],
+        zones: [],
+        fit: 'contain',
+        muted: true,
+        layout: 'single',
+        ticker: {
+          enabled: false,
+          showTime: true,
+          label: 'Headlines',
+          text: '',
+          speed: 28,
+          schedule: { mode: 'permanent', start: '08:00', end: '18:00' },
+          styles: {
+            barBg: '#030712',
+            scrollBg: '#0f172a',
+            textColor: '#ffffff',
+            timeBg: '#0f172a',
+            timeColor: '#93c5fd',
+            labelBg: '#2563eb',
+            labelColor: '#ffffff'
+          }
+        },
+        background: {
+          type: 'color',
+          color: '#000000',
+          imageId: '',
+          imageUrl: '',
+          imageFit: 'cover',
+          opacity: 1,
+          blur: 0
+        }
+      },
+      display: { fontSize: 48, theme: 'dark' }
+    };
+
+    let mediaLibrary = [];
+    let pendingMediaPlaylist = [];
+    let selectedMediaLayout = 'single';
+    let zoneAssignments = [];
+    let mediaUpdateTimer = null;
+
+    const mediaLayouts = {
+      single: ['Main'],
+      split: ['Left', 'Right'],
+      triple: ['Left', 'Center', 'Right'],
+      quad: ['Top Left', 'Top Right', 'Bottom Left', 'Bottom Right'],
+      feature: ['Feature', 'Top Right', 'Bottom Right'],
+      'sidebar-left': ['Left Rail', 'Top Main', 'Bottom Main'],
+      'sidebar-right': ['Main', 'Top Rail', 'Bottom Rail'],
+      'top-strip': ['Top Banner', 'Bottom Left', 'Bottom Right'],
+      'bottom-strip': ['Bottom Banner', 'Top Left', 'Top Right'],
+      mosaic: ['Feature', 'Top Center', 'Top Right', 'Bottom Center', 'Bottom Right'],
+      six: ['Top Left', 'Top Center', 'Top Right', 'Bottom Left', 'Bottom Center', 'Bottom Right']
+    };
+    
+    // Bible data
+    let bibleBooks = [];
+    let currentChapterVerses = [];
+    let selectedBook = '';
+    let highlightedBookIndex = -1;
+    let maxChapters = 0;
+    let maxVerses = 0;
+    
+    // Bible books with testament info
+    const bibleBookData = [
+      { name: 'Genesis', testament: 'OT', chapters: 50 },
+      { name: 'Exodus', testament: 'OT', chapters: 40 },
+      { name: 'Leviticus', testament: 'OT', chapters: 27 },
+      { name: 'Numbers', testament: 'OT', chapters: 36 },
+      { name: 'Deuteronomy', testament: 'OT', chapters: 34 },
+      { name: 'Joshua', testament: 'OT', chapters: 24 },
+      { name: 'Judges', testament: 'OT', chapters: 21 },
+      { name: 'Ruth', testament: 'OT', chapters: 4 },
+      { name: '1 Samuel', testament: 'OT', chapters: 31 },
+      { name: '2 Samuel', testament: 'OT', chapters: 24 },
+      { name: '1 Kings', testament: 'OT', chapters: 22 },
+      { name: '2 Kings', testament: 'OT', chapters: 25 },
+      { name: '1 Chronicles', testament: 'OT', chapters: 29 },
+      { name: '2 Chronicles', testament: 'OT', chapters: 36 },
+      { name: 'Ezra', testament: 'OT', chapters: 10 },
+      { name: 'Nehemiah', testament: 'OT', chapters: 13 },
+      { name: 'Esther', testament: 'OT', chapters: 10 },
+      { name: 'Job', testament: 'OT', chapters: 42 },
+      { name: 'Psalms', testament: 'OT', chapters: 150 },
+      { name: 'Proverbs', testament: 'OT', chapters: 31 },
+      { name: 'Ecclesiastes', testament: 'OT', chapters: 12 },
+      { name: 'Song of Solomon', testament: 'OT', chapters: 8 },
+      { name: 'Isaiah', testament: 'OT', chapters: 66 },
+      { name: 'Jeremiah', testament: 'OT', chapters: 52 },
+      { name: 'Lamentations', testament: 'OT', chapters: 5 },
+      { name: 'Ezekiel', testament: 'OT', chapters: 48 },
+      { name: 'Daniel', testament: 'OT', chapters: 12 },
+      { name: 'Hosea', testament: 'OT', chapters: 14 },
+      { name: 'Joel', testament: 'OT', chapters: 3 },
+      { name: 'Amos', testament: 'OT', chapters: 9 },
+      { name: 'Obadiah', testament: 'OT', chapters: 1 },
+      { name: 'Jonah', testament: 'OT', chapters: 4 },
+      { name: 'Micah', testament: 'OT', chapters: 7 },
+      { name: 'Nahum', testament: 'OT', chapters: 3 },
+      { name: 'Habakkuk', testament: 'OT', chapters: 3 },
+      { name: 'Zephaniah', testament: 'OT', chapters: 3 },
+      { name: 'Haggai', testament: 'OT', chapters: 2 },
+      { name: 'Zechariah', testament: 'OT', chapters: 14 },
+      { name: 'Malachi', testament: 'OT', chapters: 4 },
+      { name: 'Matthew', testament: 'NT', chapters: 28 },
+      { name: 'Mark', testament: 'NT', chapters: 16 },
+      { name: 'Luke', testament: 'NT', chapters: 24 },
+      { name: 'John', testament: 'NT', chapters: 21 },
+      { name: 'Acts', testament: 'NT', chapters: 28 },
+      { name: 'Romans', testament: 'NT', chapters: 16 },
+      { name: '1 Corinthians', testament: 'NT', chapters: 16 },
+      { name: '2 Corinthians', testament: 'NT', chapters: 13 },
+      { name: 'Galatians', testament: 'NT', chapters: 6 },
+      { name: 'Ephesians', testament: 'NT', chapters: 6 },
+      { name: 'Philippians', testament: 'NT', chapters: 4 },
+      { name: 'Colossians', testament: 'NT', chapters: 4 },
+      { name: '1 Thessalonians', testament: 'NT', chapters: 5 },
+      { name: '2 Thessalonians', testament: 'NT', chapters: 3 },
+      { name: '1 Timothy', testament: 'NT', chapters: 6 },
+      { name: '2 Timothy', testament: 'NT', chapters: 4 },
+      { name: 'Titus', testament: 'NT', chapters: 3 },
+      { name: 'Philemon', testament: 'NT', chapters: 1 },
+      { name: 'Hebrews', testament: 'NT', chapters: 13 },
+      { name: 'James', testament: 'NT', chapters: 5 },
+      { name: '1 Peter', testament: 'NT', chapters: 5 },
+      { name: '2 Peter', testament: 'NT', chapters: 3 },
+      { name: '1 John', testament: 'NT', chapters: 5 },
+      { name: '2 John', testament: 'NT', chapters: 1 },
+      { name: '3 John', testament: 'NT', chapters: 1 },
+      { name: 'Jude', testament: 'NT', chapters: 1 },
+      { name: 'Revelation', testament: 'NT', chapters: 22 }
+    ];
+    
+    // Common abbreviations
+    const bookAbbreviations = {
+      'gen': 'Genesis', 'ex': 'Exodus', 'exo': 'Exodus', 'lev': 'Leviticus',
+      'num': 'Numbers', 'deut': 'Deuteronomy', 'dt': 'Deuteronomy',
+      'josh': 'Joshua', 'judg': 'Judges', 'jdg': 'Judges',
+      'ru': 'Ruth', '1sam': '1 Samuel', '2sam': '2 Samuel',
+      '1ki': '1 Kings', '1kgs': '1 Kings', '2ki': '2 Kings', '2kgs': '2 Kings',
+      '1chr': '1 Chronicles', '1ch': '1 Chronicles', '2chr': '2 Chronicles', '2ch': '2 Chronicles',
+      'ezr': 'Ezra', 'neh': 'Nehemiah', 'est': 'Esther',
+      'ps': 'Psalms', 'psa': 'Psalms', 'psalm': 'Psalms',
+      'prov': 'Proverbs', 'pr': 'Proverbs', 'eccl': 'Ecclesiastes', 'ecc': 'Ecclesiastes',
+      'song': 'Song of Solomon', 'sos': 'Song of Solomon', 'ss': 'Song of Solomon',
+      'isa': 'Isaiah', 'is': 'Isaiah', 'jer': 'Jeremiah', 'lam': 'Lamentations',
+      'ezek': 'Ezekiel', 'eze': 'Ezekiel', 'dan': 'Daniel',
+      'hos': 'Hosea', 'am': 'Amos', 'oba': 'Obadiah', 'ob': 'Obadiah',
+      'jon': 'Jonah', 'mic': 'Micah', 'nah': 'Nahum', 'hab': 'Habakkuk',
+      'zeph': 'Zephaniah', 'hag': 'Haggai', 'zech': 'Zechariah', 'zec': 'Zechariah',
+      'mal': 'Malachi', 'matt': 'Matthew', 'mt': 'Matthew', 'mat': 'Matthew',
+      'mk': 'Mark', 'mr': 'Mark', 'lk': 'Luke', 'lu': 'Luke',
+      'jn': 'John', 'joh': 'John', 'ac': 'Acts', 'rom': 'Romans', 'ro': 'Romans',
+      '1cor': '1 Corinthians', '1co': '1 Corinthians', '2cor': '2 Corinthians', '2co': '2 Corinthians',
+      'gal': 'Galatians', 'ga': 'Galatians', 'eph': 'Ephesians', 'ep': 'Ephesians',
+      'phil': 'Philippians', 'php': 'Philippians', 'col': 'Colossians',
+      '1thess': '1 Thessalonians', '1th': '1 Thessalonians', '2thess': '2 Thessalonians', '2th': '2 Thessalonians',
+      '1tim': '1 Timothy', '1ti': '1 Timothy', '2tim': '2 Timothy', '2ti': '2 Timothy',
+      'tit': 'Titus', 'phm': 'Philemon', 'phlm': 'Philemon',
+      'heb': 'Hebrews', 'jas': 'James', 'jam': 'James', 'jm': 'James',
+      '1pet': '1 Peter', '1pe': '1 Peter', '2pet': '2 Peter', '2pe': '2 Peter',
+      '1jn': '1 John', '1jo': '1 John', '2jn': '2 John', '2jo': '2 John',
+      '3jn': '3 John', '3jo': '3 John', 'jude': 'Jude', 'jud': 'Jude',
+      'rev': 'Revelation', 're': 'Revelation'
+    };
+    
+    bibleBooks = bibleBookData.map(b => b.name);
+    
+    // Connection status
+    const connectionBadge = document.getElementById('connectionBadge');
+
+    function redirectToLogin() {
+      window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname)}`;
+    }
+
+    async function logout() {
+      await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+      redirectToLogin();
+    }
+    
+    socket.on('connect', () => {
+      connectionBadge.textContent = '● Connected';
+      connectionBadge.className = 'connection-badge connected';
+      socket.emit('get-media');
+    });
+    
+    socket.on('disconnect', () => {
+      connectionBadge.textContent = '● Disconnected';
+      connectionBadge.className = 'connection-badge disconnected';
+    });
+
+    socket.on('auth-required', redirectToLogin);
+    
+    // Receive state updates
+    socket.on('state-update', (state) => {
+      currentState = {
+        ...currentState,
+        ...state,
+        media: {
+          ...currentState.media,
+          ...(state.media || {})
+        }
+      };
+
+      pendingMediaPlaylist = [...(currentState.media.playlist || [])];
+      zoneAssignments = (currentState.media.zones || []).map((item) => item ? item.id : '');
+
+      updateUI();
+    });
+    
+    // ========== BOOK AUTOCOMPLETE ==========
+    function onBookInput() {
+      const input = document.getElementById('bibleBookInput');
+      const dropdown = document.getElementById('bookDropdown');
+      const clearBtn = document.getElementById('bookClearBtn');
+      const query = input.value.trim().toLowerCase();
+      
+      clearBtn.style.display = query ? 'block' : 'none';
+      
+      if (!query) {
+        dropdown.classList.remove('show');
+        return;
+      }
+      
+      // Filter books
+      const matches = bibleBookData.filter(book => 
+        book.name.toLowerCase().includes(query) ||
+        book.name.toLowerCase().startsWith(query)
+      );
+      
+      // Also check abbreviations
+      if (bookAbbreviations[query]) {
+        const abbrevMatch = bibleBookData.find(b => b.name === bookAbbreviations[query]);
+        if (abbrevMatch && !matches.includes(abbrevMatch)) {
+          matches.unshift(abbrevMatch);
+        }
+      }
+      
+      if (matches.length === 0) {
+        dropdown.classList.remove('show');
+        return;
+      }
+      
+      // Render dropdown
+      dropdown.innerHTML = matches.map((book, idx) => `
+        <div class="autocomplete-item ${idx === highlightedBookIndex ? 'highlighted' : ''}" 
+             onclick="selectBook('${book.name}')"
+             data-index="${idx}">
+          <span class="book-name">${book.name}</span>
+          <span class="book-testament">${book.testament === 'OT' ? 'Old Testament' : 'New Testament'}</span>
+        </div>
+      `).join('');
+      
+      dropdown.classList.add('show');
+    }
+    
+    function showBookDropdown() {
+      const input = document.getElementById('bibleBookInput');
+      if (!input.value.trim()) {
+        // Show all books
+        const dropdown = document.getElementById('bookDropdown');
+        dropdown.innerHTML = bibleBookData.map((book, idx) => `
+          <div class="autocomplete-item" 
+               onclick="selectBook('${book.name}')"
+               data-index="${idx}">
+            <span class="book-name">${book.name}</span>
+            <span class="book-testament">${book.testament === 'OT' ? 'Old Testament' : 'New Testament'}</span>
+          </div>
+        `).join('');
+        dropdown.classList.add('show');
+      }
+    }
+    
+    function handleBookKeydown(e) {
+      const dropdown = document.getElementById('bookDropdown');
+      const items = dropdown.querySelectorAll('.autocomplete-item');
+      
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        highlightedBookIndex = Math.min(highlightedBookIndex + 1, items.length - 1);
+        updateBookHighlight();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        highlightedBookIndex = Math.max(highlightedBookIndex - 1, 0);
+        updateBookHighlight();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (highlightedBookIndex >= 0 && items[highlightedBookIndex]) {
+          items[highlightedBookIndex].click();
+        } else if (items.length > 0) {
+          items[0].click();
+        }
+      } else if (e.key === 'Escape') {
+        dropdown.classList.remove('show');
+        highlightedBookIndex = -1;
+      } else if (e.key === 'Tab') {
+        if (items.length > 0) {
+          e.preventDefault();
+          items[0].click();
+        }
+      }
+    }
+    
+    function updateBookHighlight() {
+      const dropdown = document.getElementById('bookDropdown');
+      const items = dropdown.querySelectorAll('.autocomplete-item');
+      items.forEach((item, idx) => {
+        item.classList.toggle('highlighted', idx === highlightedBookIndex);
+        if (idx === highlightedBookIndex) {
+          item.scrollIntoView({ block: 'nearest' });
+        }
+      });
+    }
+    
+    function selectBook(bookName) {
+      const input = document.getElementById('bibleBookInput');
+      const dropdown = document.getElementById('bookDropdown');
+      const clearBtn = document.getElementById('bookClearBtn');
+      
+      input.value = bookName;
+      selectedBook = bookName;
+      dropdown.classList.remove('show');
+      clearBtn.style.display = 'block';
+      highlightedBookIndex = -1;
+      
+      // Update book info
+      const bookData = bibleBookData.find(b => b.name === bookName);
+      if (bookData) {
+        maxChapters = bookData.chapters;
+        document.getElementById('bookInfo').classList.add('show');
+        document.getElementById('bookInfoText').textContent = bookName;
+        document.getElementById('bookChapterCount').textContent = `${bookData.chapters} chapters`;
+      }
+      
+      // Clear chapter and verse
+      document.getElementById('bibleChapter').value = '';
+      document.getElementById('bibleVerse').value = '';
+      document.getElementById('bibleVerseEnd').value = '';
+      document.getElementById('bibleText').value = '';
+      document.getElementById('autoLoadedBadge').style.display = 'none';
+      document.getElementById('chapterVersesContainer').style.display = 'none';
+      
+      // Focus chapter input
+      document.getElementById('bibleChapter').focus();
+      
+      updateBiblePreview();
+    }
+    
+    function clearBookInput() {
+      const input = document.getElementById('bibleBookInput');
+      const clearBtn = document.getElementById('bookClearBtn');
+      
+      input.value = '';
+      selectedBook = '';
+      clearBtn.style.display = 'none';
+      document.getElementById('bookInfo').classList.remove('show');
+      document.getElementById('bibleChapter').value = '';
+      document.getElementById('bibleVerse').value = '';
+      document.getElementById('bibleVerseEnd').value = '';
+      document.getElementById('bibleText').value = '';
+      document.getElementById('autoLoadedBadge').style.display = 'none';
+      document.getElementById('chapterVersesContainer').style.display = 'none';
+      
+      input.focus();
+      updateBiblePreview();
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const bookWrapper = document.querySelector('.autocomplete-wrapper');
+      if (bookWrapper && !bookWrapper.contains(e.target)) {
+        document.getElementById('bookDropdown').classList.remove('show');
+        highlightedBookIndex = -1;
+      }
+    });
+    
+    // ========== CHAPTER/VERSE INPUTS ==========
+    function adjustChapter(delta) {
+      const input = document.getElementById('bibleChapter');
+      let val = parseInt(input.value) || 0;
+      val = Math.max(1, Math.min(maxChapters || 150, val + delta));
+      input.value = val;
+      onChapterChange();
+    }
+    
+    function adjustVerse(delta, type) {
+      const input = document.getElementById(type === 'start' ? 'bibleVerse' : 'bibleVerseEnd');
+      let val = parseInt(input.value) || 0;
+      val = Math.max(1, Math.min(maxVerses || 176, val + delta));
+      input.value = val;
+      onVerseChange();
+    }
+    
+    function onChapterInput() {
+      // Validate chapter range
+      const input = document.getElementById('bibleChapter');
+      let val = parseInt(input.value);
+      if (val && maxChapters && val > maxChapters) {
+        input.value = maxChapters;
+      }
+    }
+    
+    function onVerseInput() {
+      // Validate verse range
+      const startInput = document.getElementById('bibleVerse');
+      const endInput = document.getElementById('bibleVerseEnd');
+      
+      let startVal = parseInt(startInput.value);
+      let endVal = parseInt(endInput.value);
+      
+      if (startVal && maxVerses && startVal > maxVerses) {
+        startInput.value = maxVerses;
+      }
+      if (endVal && maxVerses && endVal > maxVerses) {
+        endInput.value = maxVerses;
+      }
+    }
+    
+    // When chapter changes, load verses
+    async function onChapterChange() {
+      const book = selectedBook || document.getElementById('bibleBookInput').value;
+      const chapter = document.getElementById('bibleChapter').value;
+      
+      document.getElementById('bibleVerse').value = '';
+      document.getElementById('bibleVerseEnd').value = '';
+      document.getElementById('bibleText').value = '';
+      document.getElementById('autoLoadedBadge').style.display = 'none';
+      currentChapterVerses = [];
+      maxVerses = 0;
+      
+      if (!book || !chapter) {
+        document.getElementById('chapterVersesContainer').style.display = 'none';
+        updateBiblePreview();
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/bible/chapter/${encodeURIComponent(book)}/${chapter}`);
+        const data = await response.json();
+        currentChapterVerses = data.verses || [];
+        maxVerses = currentChapterVerses.length;
+        
+        // Show chapter verses panel
+        renderChapterVerses();
+        document.getElementById('chapterVersesContainer').style.display = 'block';
+        
+        // Focus verse input
+        document.getElementById('bibleVerse').focus();
+      } catch (err) {
+        console.error('Failed to load verses:', err);
+      }
+      
+      updateBiblePreview();
+    }
+    
+    // When verse changes, fetch text
+    async function onVerseChange() {
+      const book = selectedBook || document.getElementById('bibleBookInput').value;
+      const chapter = document.getElementById('bibleChapter').value;
+      const verse = document.getElementById('bibleVerse').value;
+      
+      if (!book || !chapter || !verse) return;
+      
+      await fetchVerse();
+      updateBiblePreview();
+    }
+    
+    // Fetch verse from API
+    async function fetchVerse() {
+      const book = selectedBook || document.getElementById('bibleBookInput').value;
+      const chapter = document.getElementById('bibleChapter').value;
+      const verse = document.getElementById('bibleVerse').value;
+      const verseEnd = document.getElementById('bibleVerseEnd').value;
+      
+      if (!book || !chapter || !verse) return;
+      
+      try {
+        let url;
+        if (verseEnd && parseInt(verseEnd) > parseInt(verse)) {
+          url = `/api/bible/verses/${encodeURIComponent(book)}/${chapter}/${verse}/${verseEnd}`;
+        } else {
+          url = `/api/bible/verse/${encodeURIComponent(book)}/${chapter}/${verse}`;
+        }
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.text) {
+          document.getElementById('bibleText').value = data.text;
+          document.getElementById('autoLoadedBadge').style.display = 'inline';
+        }
+      } catch (err) {
+        console.error('Failed to fetch verse:', err);
+      }
+      
+      updateBiblePreview();
+    }
+    
+    // Parse quick verse input (e.g., "John 3:16" or "Romans 8:28-30" or "Rom 8:28-30")
+    async function parseQuickVerse() {
+      const input = document.getElementById('quickVerseInput').value.trim();
+      if (!input) return;
+      
+      // Pattern: Book Chapter:Verse or Book Chapter:VerseStart-VerseEnd
+      const match = input.match(/^(.+?)\s+(\d+):(\d+)(?:-(\d+))?$/i);
+      
+      if (!match) {
+        alert('Please use format: Book Chapter:Verse (e.g., John 3:16) or Book Chapter:Start-End (e.g., Romans 8:28-30)');
+        return;
+      }
+      
+      const [, bookInput, chapter, verseStart, verseEnd] = match;
+      const bookLower = bookInput.toLowerCase().replace(/\s+/g, '');
+      
+      // Find matching book (check abbreviations first, then full names)
+      let book = bookAbbreviations[bookLower];
+      if (!book) {
+        book = bibleBooks.find(b => 
+          b.toLowerCase() === bookInput.toLowerCase() ||
+          b.toLowerCase().startsWith(bookInput.toLowerCase()) ||
+          b.toLowerCase().replace(/\s+/g, '').startsWith(bookLower)
+        );
+      }
+      
+      if (!book) {
+        alert(`Book "${bookInput}" not found. Try using the full name or a common abbreviation.`);
+        return;
+      }
+      
+      // Set values
+      selectBook(book);
+      
+      document.getElementById('bibleChapter').value = chapter;
+      await onChapterChange();
+      
+      document.getElementById('bibleVerse').value = verseStart;
+      if (verseEnd) {
+        document.getElementById('bibleVerseEnd').value = verseEnd;
+      }
+      
+      await fetchVerse();
+      
+      // Clear the quick input
+      document.getElementById('quickVerseInput').value = '';
+    }
+    
+    function handleQuickVerseKeypress(e) {
+      if (e.key === 'Enter') {
+        parseQuickVerse();
+      }
+    }
+    
+    // Render chapter verses list
+    function renderChapterVerses() {
+      const container = document.getElementById('chapterVersesList');
+      container.innerHTML = '';
+      
+      currentChapterVerses.forEach(v => {
+        const div = document.createElement('div');
+        div.className = 'verse-item';
+        div.innerHTML = `<span class="verse-num">${v.verse}</span>${v.text}`;
+        div.onclick = () => selectVerseFromList(v.verse);
+        container.appendChild(div);
+      });
+    }
+    
+    // Select verse from chapter list
+    function selectVerseFromList(verseNum) {
+      document.getElementById('bibleVerse').value = verseNum;
+      document.getElementById('bibleVerseEnd').value = '';
+      onVerseChange();
+      
+      // Highlight selected
+      document.querySelectorAll('.verse-item').forEach((el, idx) => {
+        el.classList.toggle('selected', idx + 1 === verseNum);
+      });
+    }
+    
+    function toggleChapterView() {
+      const container = document.getElementById('chapterVersesContainer');
+      container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    // Update UI based on current state
+    function updateUI() {
+      if (!currentState.media) {
+        currentState.media = {
+          currentIndex: 0,
+          playlist: [],
+          zones: [],
+          fit: 'contain',
+          muted: true,
+          layout: 'single',
+          ticker: {
+            enabled: false,
+            showTime: true,
+            label: 'Headlines',
+            text: '',
+            speed: 28,
+            schedule: { mode: 'permanent', start: '08:00', end: '18:00' },
+            styles: {
+              barBg: '#030712',
+              scrollBg: '#0f172a',
+              textColor: '#ffffff',
+              timeBg: '#0f172a',
+              timeColor: '#93c5fd',
+              labelBg: '#2563eb',
+              labelColor: '#ffffff'
+            }
+          },
+          background: {
+            type: 'color',
+            color: '#000000',
+            imageId: '',
+            imageUrl: '',
+            imageFit: 'cover',
+            opacity: 1,
+            blur: 0
+          }
+        };
+      }
+      const incomingTicker = currentState.media.ticker || {};
+      currentState.media.ticker = {
+        enabled: false,
+        showTime: true,
+        label: 'Headlines',
+        text: '',
+        speed: 28,
+        schedule: { mode: 'permanent', start: '08:00', end: '18:00' },
+        ...incomingTicker,
+        styles: {
+          barBg: '#030712',
+          scrollBg: '#0f172a',
+          textColor: '#ffffff',
+          timeBg: '#0f172a',
+          timeColor: '#93c5fd',
+          labelBg: '#2563eb',
+          labelColor: '#ffffff',
+          ...(incomingTicker.styles || {})
+        }
+      };
+      currentState.media.background = {
+        type: 'color',
+        color: '#000000',
+        imageId: '',
+        imageUrl: '',
+        imageFit: 'cover',
+        opacity: 1,
+        blur: 0,
+        ...(currentState.media.background || {})
+      };
+      selectedMediaLayout = currentState.media.layout || selectedMediaLayout || 'single';
+
+      // Update slides display
+      renderSlides();
+      
+      // Update events display
+      renderEvents();
+
+      // Update media library and playlist
+      renderMediaLibrary();
+      renderZoneAssignments();
+      renderMediaPlaylist();
+      
+      // Update settings
+      document.getElementById('fontSizeSlider').value = currentState.display.fontSize;
+      document.getElementById('fontSizeValue').textContent = currentState.display.fontSize;
+      document.getElementById('fontPreview').style.fontSize = (currentState.display.fontSize / 2) + 'px';
+      
+      // Update theme buttons
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.classList.contains(currentState.display.theme)) {
+          btn.classList.add('active');
+        }
+      });
+
+      document.getElementById('mediaFitSelect').value = currentState.media.fit || 'contain';
+      document.getElementById('mediaMutedSelect').value = String(currentState.media.muted !== false);
+      document.getElementById('tickerEnabled').checked = currentState.media.ticker.enabled === true;
+      document.getElementById('tickerShowTime').value = String(currentState.media.ticker.showTime !== false);
+      setInputValueIfIdle('tickerLabel', currentState.media.ticker.label || 'Headlines');
+      setInputValueIfIdle('tickerText', currentState.media.ticker.text || '');
+      setControlValue('tickerSpeed', currentState.media.ticker.speed || 28);
+      setControlValue('tickerScheduleMode', (currentState.media.ticker.schedule || {}).mode || 'permanent');
+      setControlValue('tickerScheduleStart', (currentState.media.ticker.schedule || {}).start || '08:00');
+      setControlValue('tickerScheduleEnd', (currentState.media.ticker.schedule || {}).end || '18:00');
+      updateTickerSpeedLabel();
+      setControlValue('tickerBarBg', currentState.media.ticker.styles.barBg);
+      setControlValue('tickerScrollBg', currentState.media.ticker.styles.scrollBg);
+      setControlValue('tickerTextColor', currentState.media.ticker.styles.textColor);
+      setControlValue('tickerTimeBg', currentState.media.ticker.styles.timeBg);
+      setControlValue('tickerTimeColor', currentState.media.ticker.styles.timeColor);
+      setControlValue('tickerLabelBg', currentState.media.ticker.styles.labelBg);
+      setControlValue('tickerLabelColor', currentState.media.ticker.styles.labelColor);
+      renderBackgroundImageOptions();
+      setControlValue('collageBgType', currentState.media.background.type);
+      setControlValue('collageBgColor', currentState.media.background.color);
+      setControlValue('collageBgImage', currentState.media.background.imageId || '');
+      setControlValue('collageBgImageFit', currentState.media.background.imageFit || 'cover');
+      setControlValue('collageBgOpacity', Math.round((currentState.media.background.opacity ?? 1) * 100));
+      setControlValue('collageBgBlur', currentState.media.background.blur || 0);
+      updateBackgroundRangeLabels();
+      updateLayoutButtons();
+    }
+    
+    // Panel switching
+    function setActivePanel(panelName) {
+      // Update buttons
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.mode === panelName) {
+          btn.classList.add('active');
+        }
+      });
+      
+      // Update panels
+      document.querySelectorAll('.panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+      document.getElementById(panelName + 'Panel').classList.add('active');
+    }
+
+    // Media Functions
+    socket.on('media-list', (assets) => {
+      mediaLibrary = assets || [];
+      renderMediaLibrary();
+      renderZoneAssignments();
+      renderBackgroundImageOptions();
+    });
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return '0 B';
+      const units = ['B', 'KB', 'MB', 'GB'];
+      const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+    }
+
+    function setControlValue(id, value) {
+      const input = document.getElementById(id);
+      if (input && document.activeElement !== input) {
+        input.value = value;
+      }
+    }
+
+    function updateLayoutButtons() {
+      document.querySelectorAll('.layout-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.layout === selectedMediaLayout);
+      });
+    }
+
+    function setInputValueIfIdle(id, value) {
+      const input = document.getElementById(id);
+      if (document.activeElement !== input) {
+        input.value = value;
+      }
+    }
+
+    function setMediaLayout(layout) {
+      selectedMediaLayout = layout;
+      updateLayoutButtons();
+      renderZoneAssignments();
+      scheduleMediaUpdate();
+    }
+
+    function renderBackgroundImageOptions() {
+      const select = document.getElementById('collageBgImage');
+      if (!select) return;
+
+      const currentValue = select.value || currentState.media.background.imageId || '';
+      const options = mediaLibrary
+        .filter((asset) => asset.type === 'image')
+        .map((asset) => `<option value="${asset.id}">${escapeHtml(asset.name)}</option>`)
+        .join('');
+
+      select.innerHTML = '<option value="">Select image...</option>' + options;
+      select.value = currentValue;
+    }
+
+    function updateBackgroundRangeLabels() {
+      const opacity = document.getElementById('collageBgOpacity').value;
+      const blur = document.getElementById('collageBgBlur').value;
+      document.getElementById('collageBgOpacityValue').textContent = `${opacity}%`;
+      document.getElementById('collageBgBlurValue').textContent = `${blur}px`;
+    }
+
+    function updateTickerSpeedLabel() {
+      document.getElementById('tickerSpeedValue').textContent = `${document.getElementById('tickerSpeed').value}s`;
+    }
+
+    function getTickerSettings() {
+      return {
+        enabled: document.getElementById('tickerEnabled').checked,
+        showTime: document.getElementById('tickerShowTime').value === 'true',
+        label: document.getElementById('tickerLabel').value.trim() || 'Headlines',
+        text: document.getElementById('tickerText').value.trim(),
+        speed: parseInt(document.getElementById('tickerSpeed').value, 10),
+        schedule: {
+          mode: document.getElementById('tickerScheduleMode').value,
+          start: document.getElementById('tickerScheduleStart').value || '08:00',
+          end: document.getElementById('tickerScheduleEnd').value || '18:00'
+        },
+        styles: {
+          barBg: document.getElementById('tickerBarBg').value,
+          scrollBg: document.getElementById('tickerScrollBg').value,
+          textColor: document.getElementById('tickerTextColor').value,
+          timeBg: document.getElementById('tickerTimeBg').value,
+          timeColor: document.getElementById('tickerTimeColor').value,
+          labelBg: document.getElementById('tickerLabelBg').value,
+          labelColor: document.getElementById('tickerLabelColor').value
+        }
+      };
+    }
+
+    function getBackgroundSettings() {
+      return {
+        type: document.getElementById('collageBgType').value,
+        color: document.getElementById('collageBgColor').value,
+        imageId: document.getElementById('collageBgImage').value,
+        imageFit: document.getElementById('collageBgImageFit').value,
+        opacity: parseInt(document.getElementById('collageBgOpacity').value, 10) / 100,
+        blur: parseInt(document.getElementById('collageBgBlur').value, 10)
+      };
+    }
+
+    function getMediaSettings() {
+      return {
+        fit: document.getElementById('mediaFitSelect').value,
+        muted: document.getElementById('mediaMutedSelect').value === 'true',
+        layout: selectedMediaLayout || 'single',
+        ticker: getTickerSettings(),
+        background: getBackgroundSettings()
+      };
+    }
+
+    function getZonePayload() {
+      const labels = mediaLayouts[selectedMediaLayout] || mediaLayouts.single;
+      return labels.map((_, index) => {
+        const assetId = zoneAssignments[index];
+        return assetId ? { id: assetId } : null;
+      });
+    }
+
+    function scheduleMediaUpdate(options = {}) {
+      clearTimeout(mediaUpdateTimer);
+      mediaUpdateTimer = setTimeout(() => {
+        pushMediaUpdate(options);
+      }, options.immediate ? 0 : 180);
+    }
+
+    function pushMediaUpdate(options = {}) {
+      const payload = {
+        playlist: pendingMediaPlaylist,
+        zones: getZonePayload(),
+        ...getMediaSettings()
+      };
+
+      if (options.resetIndex) {
+        payload.currentIndex = 0;
+      }
+
+      socket.emit('update-media', payload);
+    }
+
+    async function uploadMediaFiles() {
+      const input = document.getElementById('mediaFileInput');
+      const status = document.getElementById('mediaUploadStatus');
+      const files = [...input.files];
+
+      if (files.length === 0) {
+        status.textContent = 'Choose one or more image/video files first.';
+        return;
+      }
+
+      status.textContent = `Uploading ${files.length} file${files.length === 1 ? '' : 's'}...`;
+
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('media', file);
+        formData.append('name', file.name);
+
+        const response = await fetch('/api/media', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            redirectToLogin();
+            return;
+          }
+
+          const error = await response.json().catch(() => ({ error: 'Upload failed' }));
+          status.textContent = `${file.name}: ${error.error || 'Upload failed'}`;
+          return;
+        }
+      }
+
+      input.value = '';
+      status.textContent = 'Upload complete.';
+      socket.emit('get-media');
+    }
+
+    function renderMediaLibrary() {
+      const grid = document.getElementById('mediaLibraryGrid');
+      if (!grid) return;
+
+      if (mediaLibrary.length === 0) {
+        grid.innerHTML = '<div class="playlist-empty">No media assets uploaded yet.</div>';
+        return;
+      }
+
+      grid.innerHTML = mediaLibrary.map((asset) => {
+        const safeName = escapeHtml(asset.name);
+        const preview = asset.type === 'video'
+          ? `<video src="${asset.url}" muted playsinline preload="metadata"></video>`
+          : `<img src="${asset.url}" alt="${safeName}">`;
+
+        return `
+          <div class="media-card">
+            <div class="media-thumb">${preview}</div>
+            <div class="media-details">
+              <div class="media-title" title="${safeName}">${safeName}</div>
+              <div class="media-meta">${asset.type} • ${formatBytes(asset.size)}</div>
+            </div>
+            <div class="media-actions">
+              <button class="btn btn-secondary" onclick="addMediaToPlaylist('${asset.id}')">
+                <span class="material-icons-round">playlist_add</span> Add
+              </button>
+              <button class="delete-btn" onclick="deleteMediaAsset('${asset.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderZoneAssignments() {
+      const container = document.getElementById('zoneAssignmentGrid');
+      if (!container) return;
+
+      const labels = mediaLayouts[selectedMediaLayout] || mediaLayouts.single;
+      const options = mediaLibrary.map((asset) => (
+        `<option value="${asset.id}">${escapeHtml(asset.name)}</option>`
+      )).join('');
+
+      container.innerHTML = labels.map((label, index) => {
+        const selectedId = zoneAssignments[index] || '';
+        return `
+          <div class="zone-assignment">
+            <label>${escapeHtml(label)}</label>
+            <select onchange="setZoneAssignment(${index}, this.value)">
+              <option value="">Auto from playlist</option>
+              ${options}
+            </select>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('select').forEach((select, index) => {
+        select.value = zoneAssignments[index] || '';
+      });
+    }
+
+    function setZoneAssignment(index, assetId) {
+      zoneAssignments[index] = assetId;
+      scheduleMediaUpdate();
+    }
+
+    function addMediaToPlaylist(assetId) {
+      const asset = mediaLibrary.find(item => item.id === assetId);
+      if (!asset) return;
+
+      pendingMediaPlaylist.push({
+        id: asset.id,
+        name: asset.name,
+        type: asset.type,
+        mimeType: asset.mimeType,
+        url: asset.url,
+        duration: asset.duration || (asset.type === 'image' ? 10 : 30),
+        fit: document.getElementById('mediaFitSelect').value || 'contain'
+      });
+
+      renderMediaPlaylist();
+      scheduleMediaUpdate();
+    }
+
+    function removeMediaFromPlaylist(index) {
+      pendingMediaPlaylist.splice(index, 1);
+      renderMediaPlaylist();
+      scheduleMediaUpdate();
+    }
+
+    function updateMediaDuration(index, value) {
+      const duration = Math.max(1, parseInt(value || 1, 10));
+      pendingMediaPlaylist[index].duration = duration;
+      scheduleMediaUpdate();
+    }
+
+    function goToMedia(index) {
+      socket.emit('media-navigate', index);
+    }
+
+    function navigateMedia(direction) {
+      socket.emit('media-navigate', direction);
+    }
+
+    function clearMediaPlaylist() {
+      pendingMediaPlaylist = [];
+      zoneAssignments = [];
+      pushMediaUpdate({ resetIndex: true });
+      renderZoneAssignments();
+      renderMediaPlaylist();
+    }
+
+    function startMediaPlaylist() {
+      if (pendingMediaPlaylist.length === 0) {
+        alert('Add at least one image or video to the playlist.');
+        return;
+      }
+
+      pushMediaUpdate({ resetIndex: true });
+    }
+
+    async function deleteMediaAsset(assetId) {
+      const asset = mediaLibrary.find(item => item.id === assetId);
+      if (!asset) return;
+
+      if (!confirm(`Delete "${asset.name}" from the media library?`)) return;
+
+      const response = await fetch(`/api/media/${encodeURIComponent(assetId)}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          redirectToLogin();
+          return;
+        }
+
+        alert('Could not delete media asset.');
+        return;
+      }
+
+      pendingMediaPlaylist = pendingMediaPlaylist.filter(item => item.id !== assetId);
+      zoneAssignments = zoneAssignments.map(id => id === assetId ? '' : id);
+      if (document.getElementById('collageBgImage').value === assetId) {
+        document.getElementById('collageBgImage').value = '';
+        document.getElementById('collageBgType').value = 'color';
+      }
+      socket.emit('get-media');
+      scheduleMediaUpdate();
+      renderZoneAssignments();
+      renderMediaPlaylist();
+    }
+
+    function renderMediaPlaylist() {
+      const container = document.getElementById('mediaPlaylistContainer');
+      if (!container) return;
+
+      if (pendingMediaPlaylist.length === 0) {
+        container.innerHTML = '<div class="playlist-empty">Build a playlist from uploaded assets.</div>';
+      } else {
+        container.innerHTML = pendingMediaPlaylist.map((item, index) => {
+          const isActive = currentState.mode === 'media' && index === currentState.media.currentIndex;
+          const safeName = escapeHtml(item.name);
+
+          return `
+            <div class="playlist-item${isActive ? ' active' : ''}">
+              <div class="playlist-number">${index + 1}</div>
+              <div class="slide-preview" onclick="goToMedia(${index})" title="${safeName}">
+                ${safeName}
+              </div>
+              <input class="media-duration" type="number" min="1" value="${item.duration || 10}" onchange="updateMediaDuration(${index}, this.value)" title="Seconds">
+              <button class="delete-btn" onclick="event.stopPropagation(); removeMediaFromPlaylist(${index})">✕</button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('prevMediaBtn').disabled = pendingMediaPlaylist.length <= 1;
+      document.getElementById('nextMediaBtn').disabled = pendingMediaPlaylist.length <= 1;
+    }
+    
+    // Bible Functions
+    function displayBibleVerse() {
+      const book = selectedBook || document.getElementById('bibleBookInput').value;
+      const chapter = document.getElementById('bibleChapter').value;
+      const verse = document.getElementById('bibleVerse').value;
+      const verseEnd = document.getElementById('bibleVerseEnd').value;
+      const text = document.getElementById('bibleText').value;
+      
+      if (!book || !chapter || !verse || !text) {
+        alert('Please select a book, chapter, verse, and ensure text is loaded.');
+        return;
+      }
+      
+      let verseRef = verse;
+      if (verseEnd && parseInt(verseEnd) > parseInt(verse)) {
+        verseRef = `${verse}-${verseEnd}`;
+      }
+      
+      socket.emit('update-bible', { book, chapter, verse: verseRef, text });
+    }
+    
+    // Update preview
+    document.getElementById('bibleText').addEventListener('input', updateBiblePreview);
+    
+    function updateBiblePreview() {
+      const book = selectedBook || document.getElementById('bibleBookInput').value || 'Book';
+      const chapter = document.getElementById('bibleChapter').value || '?';
+      const verse = document.getElementById('bibleVerse').value || '?';
+      const verseEnd = document.getElementById('bibleVerseEnd').value;
+      const text = document.getElementById('bibleText').value || 'Select a verse...';
+      
+      let verseRef = verse;
+      if (verseEnd && parseInt(verseEnd) > parseInt(verse)) {
+        verseRef = `${verse}-${verseEnd}`;
+      }
+      
+      document.getElementById('biblePreview').innerHTML = 
+        `<strong>${book} ${chapter}:${verseRef}</strong><br>"${text.substring(0, 150)}${text.length > 150 ? '...' : ''}"`;
+    }
+    
+    // Lyrics Functions
+    function loadLyrics() {
+      const title = document.getElementById('lyricsTitle').value;
+      const text = document.getElementById('lyricsText').value;
+      
+      // Split by double newlines to create slides
+      const slides = text.split(/\n\s*\n/).filter(s => s.trim());
+      
+      socket.emit('update-lyrics', {
+        title,
+        currentSlide: 0,
+        slides
+      });
+    }
+    
+    function navigateLyrics(direction) {
+      socket.emit('lyrics-navigate', direction);
+    }
+    
+    function goToSlide(index) {
+      socket.emit('lyrics-navigate', index);
+    }
+    
+    function renderSlides() {
+      const container = document.getElementById('slidesContainer');
+      container.innerHTML = '';
+      
+      currentState.lyrics.slides.forEach((slide, index) => {
+        const div = document.createElement('div');
+        div.className = 'slide-item' + (index === currentState.lyrics.currentSlide ? ' active' : '');
+        div.onclick = () => goToSlide(index);
+        div.innerHTML = `
+          <div class="slide-number">${index + 1}</div>
+          <div class="slide-preview">${slide.replace(/\n/g, ' ')}</div>
+        `;
+        container.appendChild(div);
+      });
+      
+      // Update navigation buttons
+      document.getElementById('prevSlideBtn').disabled = currentState.lyrics.currentSlide <= 0;
+      document.getElementById('nextSlideBtn').disabled = currentState.lyrics.currentSlide >= currentState.lyrics.slides.length - 1;
+    }
+    
+    // Program Functions
+    function addEvent() {
+      const input = document.getElementById('newEventInput');
+      const eventName = input.value.trim();
+      
+      if (eventName) {
+        const events = [...currentState.program.events, eventName];
+        socket.emit('update-program', {
+          ...currentState.program,
+          events
+        });
+        input.value = '';
+      }
+    }
+    
+    function handleEventKeypress(e) {
+      if (e.key === 'Enter') {
+        addEvent();
+      }
+    }
+    
+    function deleteEvent(index) {
+      const events = currentState.program.events.filter((_, i) => i !== index);
+      let currentIndex = currentState.program.currentIndex;
+      if (currentIndex >= events.length) {
+        currentIndex = Math.max(0, events.length - 1);
+      }
+      socket.emit('update-program', { events, currentIndex });
+    }
+    
+    function navigateProgram(direction) {
+      socket.emit('program-navigate', direction);
+    }
+    
+    function goToEvent(index) {
+      socket.emit('program-navigate', index);
+    }
+    
+    function renderEvents() {
+      const container = document.getElementById('eventsContainer');
+      container.innerHTML = '';
+      
+      currentState.program.events.forEach((event, index) => {
+        const div = document.createElement('div');
+        let classes = 'event-item';
+        if (index === currentState.program.currentIndex) classes += ' active';
+        if (index < currentState.program.currentIndex) classes += ' completed';
+        div.className = classes;
+        div.innerHTML = `
+          <div class="event-number">${index + 1}</div>
+          <div class="slide-preview" onclick="goToEvent(${index})" style="cursor: pointer; flex: 1;">${event}</div>
+          <button class="delete-btn" onclick="event.stopPropagation(); deleteEvent(${index})">✕</button>
+        `;
+        container.appendChild(div);
+      });
+      
+      // Update navigation buttons
+      document.getElementById('prevEventBtn').disabled = currentState.program.currentIndex <= 0;
+      document.getElementById('nextEventBtn').disabled = currentState.program.currentIndex >= currentState.program.events.length - 1;
+    }
+    
+    function loadSampleProgram() {
+      const sampleEvents = [
+        'Welcome Message',
+        'Featured Promotion',
+        'Product Highlights',
+        'Service Counter Notice',
+        'Safety Reminder',
+        'Customer Feedback QR Code',
+        'Closing Message'
+      ];
+      
+      socket.emit('update-program', {
+        currentIndex: 0,
+        events: sampleEvents
+      });
+    }
+    
+    // Settings Functions
+    function setTheme(theme) {
+      socket.emit('update-display', { theme });
+      
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.classList.contains(theme)) {
+          btn.classList.add('active');
+        }
+      });
+    }
+    
+    function updateFontSize(size) {
+      document.getElementById('fontSizeValue').textContent = size;
+      document.getElementById('fontPreview').style.fontSize = (size / 2) + 'px';
+      socket.emit('update-display', { fontSize: parseInt(size) });
+    }
+    
+    // Clear display
+    function clearDisplay() {
+      socket.emit('clear-display');
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Don't trigger if typing in input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+      
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        if (currentState.mode === 'lyrics') {
+          navigateLyrics('next');
+        } else if (currentState.mode === 'program') {
+          navigateProgram('next');
+        } else if (currentState.mode === 'media') {
+          navigateMedia('next');
+        }
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (currentState.mode === 'lyrics') {
+          navigateLyrics('prev');
+        } else if (currentState.mode === 'program') {
+          navigateProgram('prev');
+        } else if (currentState.mode === 'media') {
+          navigateMedia('prev');
+        }
+      } else if (e.key === 'Escape') {
+        clearDisplay();
+      }
+    });
+    
+    // ========== SONG LIBRARY FUNCTIONS ==========
+    let songLibrary = [];
+
+    // Request songs on load
+    socket.emit('get-songs');
+
+    socket.on('songs-list', (songs) => {
+      songLibrary = songs;
+      updateSongDropdown();
+    });
+
+    function updateSongDropdown() {
+      const select = document.getElementById('songLibrarySelect');
+      const header = '<option value="">Select a saved message...</option>';
+      
+      const options = songLibrary.map(song => 
+        `<option value="${song.id}">${song.title}</option>`
+      ).join('');
+      
+      select.innerHTML = header + options;
+    }
+
+    function selectSongFromLibrary(songId) {
+      if (!songId) return;
+      
+      const song = songLibrary.find(s => s.id === songId);
+      if (song) {
+        document.getElementById('lyricsTitle').value = song.title;
+        document.getElementById('lyricsText').value = song.content;
+      }
+    }
+
+    function saveSongToLibrary() {
+      const title = document.getElementById('lyricsTitle').value.trim();
+      const content = document.getElementById('lyricsText').value.trim();
+      
+      if (!title || !content) {
+        alert('Please enter a title and display text first.');
+        return;
+      }
+      
+      // Check if we are updating an existing song (by title match)
+      // Ideally we'd store the ID in a hidden field, but matching by Title is okay for now
+      // Or we check if the selected dropdown value matches the current title
+      
+      let id = title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      
+      // If user selected a song and didn't change title, update that ID
+      const selectedId = document.getElementById('songLibrarySelect').value;
+      const selectedSong = songLibrary.find(s => s.id === selectedId);
+      if (selectedSong && selectedSong.title === title) {
+        id = selectedId;
+      }
+
+      socket.emit('save-song', {
+        id,
+        title,
+        content
+      });
+      
+      alert('Message saved to library.');
+    }
+
+    function deleteSongFromLibrary() {
+      const select = document.getElementById('songLibrarySelect');
+      const songId = select.value;
+      
+      if (!songId) {
+        alert('Please select a saved message from the library to delete.');
+        return;
+      }
+      
+      if (confirm('Delete this saved message?')) {
+        socket.emit('delete-song', songId);
+        // Clear inputs after delete
+        document.getElementById('lyricsTitle').value = '';
+        document.getElementById('lyricsText').value = '';
+        select.value = '';
+      }
+    }
+
+    function refreshSongLibrary() {
+      socket.emit('get-songs');
+    }
+
+    [
+      'mediaFitSelect',
+      'mediaMutedSelect',
+      'tickerEnabled',
+      'tickerShowTime',
+      'tickerBarBg',
+      'tickerScrollBg',
+      'tickerTextColor',
+      'tickerTimeBg',
+      'tickerTimeColor',
+      'tickerLabelBg',
+      'tickerLabelColor',
+      'tickerScheduleMode',
+      'tickerScheduleStart',
+      'tickerScheduleEnd',
+      'collageBgType',
+      'collageBgColor',
+      'collageBgImage',
+      'collageBgImageFit'
+    ].forEach((id) => {
+      document.getElementById(id).addEventListener('change', () => scheduleMediaUpdate());
+    });
+
+    ['tickerLabel', 'tickerText'].forEach((id) => {
+      document.getElementById(id).addEventListener('input', () => scheduleMediaUpdate());
+    });
+
+    [
+      'tickerBarBg',
+      'tickerScrollBg',
+      'tickerTextColor',
+      'tickerTimeBg',
+      'tickerTimeColor',
+      'tickerLabelBg',
+      'tickerLabelColor',
+      'collageBgColor'
+    ].forEach((id) => {
+      document.getElementById(id).addEventListener('input', () => scheduleMediaUpdate());
+    });
+
+    ['tickerSpeed', 'collageBgOpacity', 'collageBgBlur'].forEach((id) => {
+      document.getElementById(id).addEventListener('input', () => {
+        if (id === 'tickerSpeed') updateTickerSpeedLabel();
+        updateBackgroundRangeLabels();
+        scheduleMediaUpdate();
+      });
+    });
+
+    // Initialize
+    updateBiblePreview();
+    
+    // Mobile Menu Logic
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+    function toggleMenu() {
+      sidebar.classList.toggle('active');
+      sidebarOverlay.classList.toggle('active');
+    }
+    
+    function closeMenu() {
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    }
+    
+    mobileMenuBtn.addEventListener('click', toggleMenu);
+    sidebarOverlay.addEventListener('click', closeMenu);
+    
+    // Auto-close menu when clicking a mode button on mobile
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          closeMenu();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
