@@ -81,6 +81,24 @@ When a media playlist is sent to the display player, the player downloads each i
 
 The app can run anywhere that supports persistent Node.js WebSocket connections and durable disk storage for `uploads/media` and `data/media.json`.
 
+### Railway
+
+Railway can deploy this repo directly from GitHub. Attach a Railway Volume to the web service so uploaded media and saved settings persist across deploys. The app automatically uses Railway's `RAILWAY_VOLUME_MOUNT_PATH` when a volume is attached.
+
+Recommended Railway settings:
+
+- Source repo: `Raphdon832/OnScreenDisplay`
+- Start command: `npm start`
+- Volume mount path: `/data`
+- Environment variables:
+  - `NODE_ENV=production`
+  - `ADMIN_PASSWORD=<your control panel password>`
+  - `AUTH_SECRET=<long random string>`
+
+The Railway Free plan includes a small persistent volume, so keep video uploads light.
+
+### Render
+
 This repo includes `render.yaml` for Render:
 
 - Web service runtime: Node

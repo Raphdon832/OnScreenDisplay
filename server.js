@@ -17,9 +17,10 @@ app.use(express.json({ limit: '5mb' }));
 
 const publicDir = path.join(__dirname, 'public');
 const bundledDataDir = path.join(__dirname, 'data');
-const persistentRoot = process.env.PERSISTENT_ROOT || __dirname;
-const dataDir = process.env.PERSISTENT_ROOT ? path.join(persistentRoot, 'data') : bundledDataDir;
-const mediaDir = process.env.PERSISTENT_ROOT
+const persistentRoot = process.env.PERSISTENT_ROOT || process.env.RAILWAY_VOLUME_MOUNT_PATH || __dirname;
+const usePersistentRoot = Boolean(process.env.PERSISTENT_ROOT || process.env.RAILWAY_VOLUME_MOUNT_PATH);
+const dataDir = usePersistentRoot ? path.join(persistentRoot, 'data') : bundledDataDir;
+const mediaDir = usePersistentRoot
   ? path.join(persistentRoot, 'uploads', 'media')
   : path.join(__dirname, 'uploads', 'media');
 const mediaLibraryPath = path.join(dataDir, 'media.json');
