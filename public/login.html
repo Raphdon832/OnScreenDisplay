@@ -28,17 +28,19 @@
 
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       display: grid;
       place-items: center;
-      padding: 24px;
+      padding: clamp(16px, 5vw, 24px);
       font-family: 'Inter', sans-serif;
       background: #0f172a;
       color: var(--text-main);
+      overflow-x: hidden;
     }
 
     .login-panel {
       width: min(100%, 420px);
-      padding: 28px;
+      padding: clamp(20px, 5vw, 28px);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       background: var(--bg-panel);
@@ -58,7 +60,7 @@
     }
 
     h1 {
-      font-size: 22px;
+      font-size: clamp(20px, 6vw, 22px);
       line-height: 1.2;
       font-weight: 700;
     }
@@ -80,6 +82,7 @@
 
     input {
       width: 100%;
+      min-width: 0;
       padding: 13px 14px;
       border: 1px solid var(--border-color);
       border-radius: 6px;
@@ -139,6 +142,16 @@
 
     .display-link:hover {
       color: var(--text-main);
+    }
+
+    @media (max-width: 420px) {
+      .brand {
+        align-items: flex-start;
+      }
+
+      .brand .material-icons-round {
+        font-size: 26px;
+      }
     }
   </style>
 </head>
