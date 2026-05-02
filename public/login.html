@@ -7,16 +7,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com/css2">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="/brand.css">
   <style>
     :root {
-      --bg-body: #0f172a;
-      --bg-panel: #1e293b;
-      --bg-input: #334155;
-      --primary: #3b82f6;
-      --primary-dark: #2563eb;
-      --text-main: #f8fafc;
-      --text-secondary: #94a3b8;
-      --border-color: #334155;
+      --brand-core-bg: #070908;
+      --bg-body: #121513;
+      --bg-panel: rgba(7, 9, 8, 0.88);
+      --bg-input: rgba(255, 255, 255, 0.065);
+      --primary: #ffffff;
+      --primary-dark: #dcebe1;
+      --text-main: #f7f7f2;
+      --text-secondary: rgba(247, 247, 242, 0.66);
+      --border-color: rgba(255, 255, 255, 0.12);
       --danger: #f87171;
     }
 
@@ -33,7 +35,10 @@
       place-items: center;
       padding: clamp(16px, 5vw, 24px);
       font-family: 'Inter', sans-serif;
-      background: #0f172a;
+      background:
+        radial-gradient(circle at 6% 8%, rgba(204, 224, 211, 0.24), transparent 24rem),
+        radial-gradient(circle at 92% 20%, rgba(176, 211, 197, 0.16), transparent 28rem),
+        linear-gradient(135deg, #151814 0%, #0b0d0c 44%, #1d2420 100%);
       color: var(--text-main);
       overflow-x: hidden;
     }
@@ -42,9 +47,10 @@
       width: min(100%, 420px);
       padding: clamp(20px, 5vw, 28px);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 22px;
       background: var(--bg-panel);
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+      box-shadow: 0 42px 120px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(18px);
     }
 
     .brand {
@@ -52,11 +58,6 @@
       align-items: center;
       gap: 12px;
       margin-bottom: 24px;
-    }
-
-    .brand .material-icons-round {
-      color: var(--primary);
-      font-size: 30px;
     }
 
     h1 {
@@ -85,7 +86,7 @@
       min-width: 0;
       padding: 13px 14px;
       border: 1px solid var(--border-color);
-      border-radius: 6px;
+      border-radius: 999px;
       background: var(--bg-input);
       color: var(--text-main);
       font: inherit;
@@ -94,7 +95,7 @@
 
     input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+      box-shadow: 0 0 0 4px rgba(220, 235, 225, 0.16);
     }
 
     button {
@@ -106,9 +107,9 @@
       margin-top: 18px;
       padding: 13px 16px;
       border: 0;
-      border-radius: 6px;
+      border-radius: 999px;
       background: var(--primary);
-      color: #ffffff;
+      color: #050706;
       font: inherit;
       font-weight: 700;
       cursor: pointer;
@@ -154,17 +155,13 @@
       .brand {
         align-items: flex-start;
       }
-
-      .brand .material-icons-round {
-        font-size: 26px;
-      }
     }
   </style>
 </head>
 <body>
   <main class="login-panel">
     <div class="brand">
-      <span class="material-icons-round">connected_tv</span>
+      <span class="brand-mark" aria-hidden="true"></span>
       <div>
         <h1>ScrinDeck</h1>
         <p>Sign in to manage screens, playlists, layouts, and uploaded media.</p>

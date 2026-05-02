@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ScrinDeck Display</title>
+  <link rel="stylesheet" href="/brand.css">
   <style>
     * {
       margin: 0;
@@ -77,6 +78,11 @@
       font-size: clamp(56px, 8vw, 96px);
       margin-bottom: clamp(18px, 3vw, 28px);
       opacity: 0.9;
+    }
+
+    .welcome .brand-mark {
+      --brand-core-bg: #101513;
+      margin-bottom: clamp(18px, 3vw, 28px);
     }
     
     .welcome p {
@@ -595,7 +601,7 @@
   
   <!-- Welcome Screen -->
   <div class="container welcome" id="welcomeScreen">
-    <div class="display-mark">▣</div>
+    <span class="brand-mark brand-mark-lg" aria-hidden="true"></span>
     <h1>ScrinDeck</h1>
     <p>Waiting for scheduled content</p>
   </div>

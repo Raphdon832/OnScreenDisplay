@@ -1,0 +1,40 @@
+.brand-mark {
+  --brand-size: 38px;
+  --brand-dot: 17px;
+  --brand-dot-offset: 5px;
+  --brand-dot-ring: 3px;
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: var(--brand-size);
+  height: var(--brand-size);
+  border-radius: 50%;
+  background: conic-gradient(from 20deg, #ffffff, #b8c7bd 46%, #ffffff 54%, #1c211f 54%, #1c211f 73%, #ffffff 74%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  right: var(--brand-dot-offset);
+  bottom: var(--brand-dot-offset);
+  width: var(--brand-dot);
+  height: var(--brand-dot);
+  border-radius: 50%;
+  background: var(--brand-core-bg, var(--shell-bg, #030403));
+  box-shadow: inset 0 0 0 var(--brand-dot-ring) #dfe7e1;
+}
+
+.brand-mark.brand-mark-sm {
+  --brand-size: 30px;
+  --brand-dot: 13px;
+  --brand-dot-offset: 4px;
+  --brand-dot-ring: 2px;
+}
+
+.brand-mark.brand-mark-lg {
+  --brand-size: clamp(64px, 9vw, 96px);
+  --brand-dot: clamp(28px, 4vw, 43px);
+  --brand-dot-offset: clamp(8px, 1.2vw, 12px);
+  --brand-dot-ring: clamp(4px, 0.7vw, 7px);
+}
