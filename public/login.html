@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In - OnScreen Signage</title>
+  <title>Sign In - ScrinDeck</title>
   <link rel="preconnect" href="https://fonts.googleapis.com/css2">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -130,11 +130,17 @@
       font-size: 13px;
     }
 
+    .helper-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
     .display-link {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      margin-top: 20px;
       color: var(--text-secondary);
       text-decoration: none;
       font-size: 13px;
@@ -160,7 +166,7 @@
     <div class="brand">
       <span class="material-icons-round">connected_tv</span>
       <div>
-        <h1>OnScreen Signage</h1>
+        <h1>ScrinDeck</h1>
         <p>Sign in to manage screens, playlists, layouts, and uploaded media.</p>
       </div>
     </div>
@@ -175,10 +181,16 @@
       <div class="error" id="loginError" role="alert"></div>
     </form>
 
-    <a class="display-link" href="/display.html" target="_blank" rel="noreferrer">
-      <span class="material-icons-round">open_in_new</span>
-      Open display player
-    </a>
+    <div class="helper-links">
+      <a class="display-link" href="/display.html" target="_blank" rel="noreferrer">
+        <span class="material-icons-round">open_in_new</span>
+        Open display player
+      </a>
+      <a class="display-link" href="/about.html">
+        <span class="material-icons-round">info</span>
+        About ScrinDeck
+      </a>
+    </div>
   </main>
 
   <script>

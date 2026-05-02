@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control Panel - OnScreen Signage</title>
+  <title>Control Panel - ScrinDeck</title>
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com/css2">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -122,6 +122,7 @@
       flex-shrink: 0;
     }
 
+    .header-action-link,
     .logout-btn {
       display: inline-flex;
       align-items: center;
@@ -135,14 +136,17 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
+      text-decoration: none;
     }
 
+    .header-action-link:hover,
     .logout-btn:hover {
       border-color: rgba(248, 250, 252, 0.28);
       color: var(--text-main);
       background: rgba(51, 65, 85, 0.75);
     }
 
+    .header-action-link .material-icons-round,
     .logout-btn .material-icons-round {
       font-size: 18px;
     }
@@ -1484,6 +1488,10 @@
         padding: 7px 8px;
       }
 
+      .about-text {
+        display: none;
+      }
+
       .content {
         padding: 10px;
       }
@@ -1562,10 +1570,14 @@
       </button>
       <div class="header-branding">
         <span class="material-icons-round" style="color: var(--primary);">connected_tv</span>
-        <h1>OnScreen Signage</h1>
+        <h1>ScrinDeck</h1>
       </div>
     </div>
     <div class="header-actions">
+      <a class="header-action-link" href="/about.html" target="_blank" rel="noreferrer" title="About ScrinDeck">
+        <span class="material-icons-round">info</span>
+        <span class="about-text">About</span>
+      </a>
       <div class="connection-badge" id="connectionBadge">Connecting...</div>
       <button class="logout-btn" onclick="logout()" title="Sign out">
         <span class="material-icons-round">logout</span>
@@ -1576,7 +1588,7 @@
   
   <div class="main-container">
     <div class="sidebar">
-      <h3>Signage Tools</h3>
+      <h3>ScrinDeck Tools</h3>
       <button class="mode-btn active" data-mode="media" onclick="setActivePanel('media')">
         <span class="material-icons-round icon">perm_media</span> Media
       </button>

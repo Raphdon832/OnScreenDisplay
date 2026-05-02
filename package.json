@@ -1,5 +1,5 @@
 {
-  "name": "onscreen-signage",
+  "name": "scrindeck",
   "version": "1.0.0",
   "description": "Digital signage control panel and display player with cached media playback",
   "main": "server.js",

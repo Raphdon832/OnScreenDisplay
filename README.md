@@ -1,6 +1,6 @@
-# OnScreen Signage
+# ScrinDeck
 
-A real-time digital signage control panel and display player. Upload image/video assets, build a repeatable playlist, and keep the display device playing cached media when connectivity drops.
+A real-time digital signage control panel and display player. Upload image/video assets, build repeatable playlists and layouts, and keep the display device playing cached media when connectivity drops.
 
 ## Features
 
@@ -29,6 +29,7 @@ Open:
 
 - Control Panel: `http://localhost:3000/control.html`
 - Display Player: `http://localhost:3000/display.html`
+- About Page: `http://localhost:3000/about.html`
 
 Local development uses admin password `1234` unless you set `ADMIN_PASSWORD`.
 
@@ -71,7 +72,8 @@ When a media playlist is sent to the display player, the player downloads each i
 │   └── media/            # Uploaded image/video files
 ├── public/
 │   ├── index.html        # Landing page
-│   ├── control.html      # Signage control interface
+│   ├── about.html        # App overview and usage guide
+│   ├── control.html      # ScrinDeck control interface
 │   ├── display.html      # Display player
 │   └── sw.js             # Offline cache service worker
 └── package.json

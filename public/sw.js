@@ -1,8 +1,9 @@
-const STATIC_CACHE = 'onscreen-signage-static-v4';
+const STATIC_CACHE = 'onscreen-signage-static-v5';
 const MEDIA_CACHE = 'onscreen-signage-media-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/about.html',
   '/display.html'
 ];
 
