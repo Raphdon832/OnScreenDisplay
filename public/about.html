@@ -7,541 +7,223 @@
   <link rel="preconnect" href="https://fonts.googleapis.com/css2">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  <style>
-    :root {
-      --bg-body: #0f172a;
-      --bg-panel: #162033;
-      --bg-muted: #1e293b;
-      --border: #334155;
-      --primary: #3b82f6;
-      --accent: #14b8a6;
-      --warning: #f59e0b;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-soft: #cbd5e1;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html,
-    body {
-      min-width: 0;
-      overflow-x: hidden;
-    }
-
-    body {
-      min-height: 100vh;
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-body);
-      color: var(--text-main);
-      line-height: 1.6;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 14px clamp(16px, 4vw, 40px);
-      border-bottom: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(14px);
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-      text-decoration: none;
-      font-weight: 800;
-      letter-spacing: 0;
-    }
-
-    .brand .material-icons-round {
-      color: var(--primary);
-      font-size: 28px;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .nav-links a,
-    .secondary-link,
-    .primary-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-height: 38px;
-      padding: 8px 12px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: rgba(30, 41, 59, 0.78);
-      color: var(--text-soft);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .nav-links a:hover,
-    .secondary-link:hover,
-    .primary-link:hover {
-      border-color: rgba(248, 250, 252, 0.28);
-      color: var(--text-main);
-    }
-
-    .page {
-      width: min(1120px, 100%);
-      margin: 0 auto;
-      padding: clamp(28px, 6vw, 64px) clamp(16px, 4vw, 32px);
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
-      gap: clamp(24px, 5vw, 48px);
-      align-items: center;
-      margin-bottom: clamp(34px, 7vw, 72px);
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-      color: var(--accent);
-      font-size: 13px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    h1 {
-      max-width: 760px;
-      font-size: clamp(34px, 7vw, 64px);
-      line-height: 1;
-      letter-spacing: 0;
-      margin-bottom: 18px;
-    }
-
-    .lead {
-      max-width: 680px;
-      color: var(--text-soft);
-      font-size: clamp(16px, 2.5vw, 20px);
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 26px;
-    }
-
-    .primary-link {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #ffffff;
-    }
-
-    .screen-preview {
-      min-height: 320px;
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: #111827;
-      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
-    }
-
-    .preview-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin-bottom: 14px;
-    }
-
-    .preview-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--text-muted);
-    }
-
-    .preview-dot:nth-child(1) {
-      background: #ef4444;
-    }
-
-    .preview-dot:nth-child(2) {
-      background: var(--warning);
-    }
-
-    .preview-dot:nth-child(3) {
-      background: #22c55e;
-    }
-
-    .preview-layout {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      grid-template-rows: 1fr 1fr 42px;
-      gap: 10px;
-      min-height: 250px;
-    }
-
-    .preview-zone {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
-      border: 1px solid rgba(148, 163, 184, 0.24);
-      border-radius: 6px;
-      background: var(--bg-muted);
-      color: var(--text-soft);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .preview-zone.main {
-      grid-row: 1 / 3;
-      background: #1d4ed8;
-    }
-
-    .preview-zone.media {
-      background: #0f766e;
-    }
-
-    .preview-zone.text {
-      background: #334155;
-    }
-
-    .preview-zone.ticker {
-      grid-column: 1 / -1;
-      justify-content: flex-start;
-      gap: 12px;
-      padding-inline: 12px;
-      background: #020617;
-      color: #f8fafc;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-
-    .ticker-time {
-      flex: 0 0 auto;
-      padding: 5px 8px;
-      border-radius: 4px;
-      background: var(--primary);
-      font-size: 12px;
-    }
-
-    .ticker-copy {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    section {
-      margin-top: clamp(28px, 6vw, 56px);
-    }
-
-    h2 {
-      margin-bottom: 14px;
-      font-size: clamp(24px, 4vw, 34px);
-      line-height: 1.15;
-      letter-spacing: 0;
-    }
-
-    .section-copy {
-      max-width: 800px;
-      color: var(--text-soft);
-      margin-bottom: 20px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .feature,
-    .step {
-      min-width: 0;
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--bg-panel);
-    }
-
-    .feature .material-icons-round,
-    .step-number {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 34px;
-      height: 34px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-      background: rgba(59, 130, 246, 0.14);
-      color: var(--primary);
-      font-weight: 800;
-    }
-
-    .feature h3,
-    .step h3 {
-      margin-bottom: 8px;
-      font-size: 16px;
-      line-height: 1.3;
-    }
-
-    .feature p,
-    .step p,
-    .note-list {
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      counter-reset: steps;
-    }
-
-    .note {
-      padding: 18px;
-      border: 1px solid rgba(20, 184, 166, 0.35);
-      border-radius: 8px;
-      background: rgba(20, 184, 166, 0.09);
-    }
-
-    .note h3 {
-      margin-bottom: 10px;
-      color: #99f6e4;
-      font-size: 16px;
-    }
-
-    .note-list {
-      padding-left: 18px;
-    }
-
-    .note-list li + li {
-      margin-top: 8px;
-    }
-
-    footer {
-      margin-top: 56px;
-      padding-top: 22px;
-      border-top: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    @media (max-width: 820px) {
-      .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .nav-links {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      .hero,
-      .grid,
-      .steps {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 520px) {
-      .nav-links a,
-      .secondary-link,
-      .primary-link {
-        width: 100%;
-      }
-
-      .screen-preview {
-        min-height: 260px;
-        padding: 12px;
-      }
-
-      .preview-layout {
-        grid-template-columns: 1fr;
-        grid-template-rows: 110px 78px 78px 42px;
-        min-height: auto;
-      }
-
-      .preview-zone.main,
-      .preview-zone.ticker {
-        grid-column: auto;
-        grid-row: auto;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="/marketing.css">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="/">
-      <span class="material-icons-round">connected_tv</span>
-      <span>ScrinDeck</span>
-    </a>
-    <nav class="nav-links" aria-label="Primary">
-      <a href="/control.html"><span class="material-icons-round">tune</span> Control Panel</a>
-      <a href="/display.html" target="_blank" rel="noreferrer"><span class="material-icons-round">open_in_new</span> Display Player</a>
-      <a href="/"><span class="material-icons-round">home</span> Home</a>
-    </nav>
-  </header>
+  <div class="page-wrap">
+    <div class="site-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="ScrinDeck home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>ScrinDeck</span>
+        </a>
 
-  <main class="page">
-    <section class="hero" aria-labelledby="about-title">
-      <div>
-        <div class="eyebrow">
-          <span class="material-icons-round">dashboard_customize</span>
-          Digital signage control
-        </div>
-        <h1 id="about-title">ScrinDeck runs media, layouts, tickers, and notices on your display screens.</h1>
-        <p class="lead">
-          ScrinDeck is a browser-based signage system. Open the display player on a TV,
-          kiosk, or media device, then use the control panel from another device to update
-          what appears on screen in real time.
-        </p>
-        <div class="hero-actions">
-          <a class="primary-link" href="/control.html">
-            <span class="material-icons-round">tune</span>
-            Open Control Panel
+        <nav class="nav-pill" aria-label="Primary">
+          <a href="/">Home</a>
+          <a class="active" href="/about.html">About</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#capabilities">Features</a>
+          <a href="#notes">Notes</a>
+          <a href="/control.html">Control</a>
+        </nav>
+
+        <div class="top-actions">
+          <a class="icon-link" href="/display.html" target="_blank" rel="noreferrer" aria-label="Open display player">
+            <span class="screen-glyph" aria-hidden="true"></span>
           </a>
-          <a class="secondary-link" href="/display.html" target="_blank" rel="noreferrer">
-            <span class="material-icons-round">open_in_new</span>
-            Open Display Player
+          <a class="account-link" href="/control.html">
+            <span class="material-icons-round">person_outline</span>
+            <span>Sign In</span>
           </a>
         </div>
-      </div>
+      </header>
 
-      <div class="screen-preview" aria-label="ScrinDeck layout preview">
-        <div class="preview-toolbar" aria-hidden="true">
-          <span class="preview-dot"></span>
-          <span class="preview-dot"></span>
-          <span class="preview-dot"></span>
-        </div>
-        <div class="preview-layout">
-          <div class="preview-zone main">Main media</div>
-          <div class="preview-zone media">Side media</div>
-          <div class="preview-zone text">Text slide</div>
-          <div class="preview-zone ticker">
-            <span class="ticker-time">12:45</span>
-            <span class="ticker-copy">Headlines and announcements scroll across the bottom of the screen</span>
+      <main>
+        <section class="hero-stage" aria-labelledby="about-title">
+          <div class="stage-lines" aria-hidden="true">
+            <div class="line-node left top-left">
+              <span class="node-icon"><span class="material-icons-round">devices</span></span>
+              <span class="node-copy"><strong>Display</strong><span>Open once, keep live</span></span>
+            </div>
+            <div class="line-node left bottom-left">
+              <span class="node-icon"><span class="material-icons-round">tune</span></span>
+              <span class="node-copy"><strong>Remote</strong><span>Control every zone</span></span>
+            </div>
+            <div class="line-node right top-right">
+              <span class="node-copy"><strong>Playlist</strong><span>Images and videos</span></span>
+              <span class="node-icon"><span class="material-icons-round">playlist_play</span></span>
+            </div>
+            <div class="line-node right bottom-right">
+              <span class="node-copy"><strong>Offline</strong><span>Cached repeat play</span></span>
+              <span class="node-icon"><span class="material-icons-round">cloud_done</span></span>
+            </div>
           </div>
+
+          <div class="hero-content">
+            <div class="kicker">
+              <span class="material-icons-round">info</span>
+              About the ScrinDeck display system
+            </div>
+            <h1 id="about-title">About ScrinDeck <span class="headline-soft">and how it works</span></h1>
+            <p class="lead">
+              ScrinDeck turns a browser into a signage player and another browser into the remote.
+              Use it to compose layouts, run media, overlay a news-style ticker, and keep repeat playback available.
+            </p>
+            <div class="hero-actions">
+              <a class="btn" href="/control.html">
+                Open Control
+                <span class="material-icons-round">north_east</span>
+              </a>
+              <a class="btn primary" href="/display.html" target="_blank" rel="noreferrer">Open Display</a>
+            </div>
+          </div>
+
+          <div class="scroll-hint" aria-hidden="true">
+            <span class="material-icons-round">south</span>
+            02/03 . Scroll down
+          </div>
+
+          <div class="stage-status" aria-hidden="true">
+            <strong>Usage flow</strong>
+            <div class="progress-bars">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </section>
+
+        <div class="brand-row" aria-label="ScrinDeck workflow capabilities">
+          <span><span class="material-icons-round">devices</span> Display</span>
+          <span><span class="material-icons-round">tune</span> Remote</span>
+          <span><span class="material-icons-round">perm_media</span> Media</span>
+          <span><span class="material-icons-round">view_quilt</span> Layouts</span>
+          <span><span class="material-icons-round">subtitles</span> Ticker</span>
+          <span><span class="material-icons-round">cached</span> Cache</span>
         </div>
-      </div>
-    </section>
 
-    <section aria-labelledby="what-title">
-      <h2 id="what-title">What ScrinDeck Does</h2>
-      <p class="section-copy">
-        The app is built for repeatable digital signage: upload media, choose layouts,
-        assign content to each part of the screen, and keep the display device playing
-        even when connectivity is unreliable.
-      </p>
-      <div class="grid">
-        <article class="feature">
-          <span class="material-icons-round">perm_media</span>
-          <h3>Media Library</h3>
-          <p>Upload images and videos, add them to playlists, and set how long each item should play.</p>
-        </article>
-        <article class="feature">
-          <span class="material-icons-round">view_quilt</span>
-          <h3>Layout Templates</h3>
-          <p>Use full-screen, split-screen, and collage layouts so more than one media type can appear at once.</p>
-        </article>
-        <article class="feature">
-          <span class="material-icons-round">subtitles</span>
-          <h3>Ticker Overlay</h3>
-          <p>Show time, scrolling text, and a custom label across the bottom of the display.</p>
-        </article>
-        <article class="feature">
-          <span class="material-icons-round">cached</span>
-          <h3>Offline Playback</h3>
-          <p>The display player downloads and caches playlist media after it has loaded online.</p>
-        </article>
-        <article class="feature">
-          <span class="material-icons-round">event_note</span>
-          <h3>Schedules</h3>
-          <p>Create timed notices and control when the ticker should hide, show, or remain permanent.</p>
-        </article>
-        <article class="feature">
-          <span class="material-icons-round">sync</span>
-          <h3>Real-Time Updates</h3>
-          <p>Control changes are sent to connected display players without restarting the whole playlist.</p>
-        </article>
-      </div>
-    </section>
+        <section class="content-section" id="workflow" aria-labelledby="workflow-title">
+          <div class="section-head">
+            <h2 id="workflow-title">How to use ScrinDeck.</h2>
+            <p class="section-copy">
+              The system has two parts: the display player that stays on the screen,
+              and the control panel where the operator uploads, arranges, schedules, and updates content.
+            </p>
+          </div>
 
-    <section aria-labelledby="use-title">
-      <h2 id="use-title">How to Use ScrinDeck</h2>
-      <div class="steps">
-        <article class="step">
-          <div class="step-number">1</div>
-          <h3>Open the display player</h3>
-          <p>On the TV, kiosk, or media device, open <strong>/display.html</strong> and put the browser in full screen.</p>
-        </article>
-        <article class="step">
-          <div class="step-number">2</div>
-          <h3>Sign in to the control panel</h3>
-          <p>Open <strong>/control.html</strong> on your phone, tablet, or computer and sign in with the admin password.</p>
-        </article>
-        <article class="step">
-          <div class="step-number">3</div>
-          <h3>Upload and choose media</h3>
-          <p>Add image or video files, then place them into the active playlist or assign them to layout zones.</p>
-        </article>
-        <article class="step">
-          <div class="step-number">4</div>
-          <h3>Pick a layout</h3>
-          <p>Select a template, choose which media appears in each region, and adjust the collage background.</p>
-        </article>
-        <article class="step">
-          <div class="step-number">5</div>
-          <h3>Configure the ticker</h3>
-          <p>Set the time block, scrolling text, label, colors, speed, and schedule for the bottom overlay.</p>
-        </article>
-        <article class="step">
-          <div class="step-number">6</div>
-          <h3>Leave the player running</h3>
-          <p>Once media has loaded, ScrinDeck keeps cached playlist items available for repeat playback.</p>
-        </article>
-      </div>
-    </section>
+          <div class="steps-grid">
+            <article class="step-tile">
+              <div class="step-number">1</div>
+              <h3>Open the display player</h3>
+              <p>On the TV, kiosk, tablet, or media device, open <strong>/display.html</strong> and switch the browser to full screen.</p>
+            </article>
+            <article class="step-tile">
+              <div class="step-number">2</div>
+              <h3>Sign in to the remote</h3>
+              <p>Open <strong>/control.html</strong> on your phone, laptop, or tablet and sign in with the admin password.</p>
+            </article>
+            <article class="step-tile">
+              <div class="step-number">3</div>
+              <h3>Upload and assign media</h3>
+              <p>Add images and videos, build the active playlist, then choose what appears in each layout region.</p>
+            </article>
+            <article class="step-tile">
+              <div class="step-number">4</div>
+              <h3>Publish live changes</h3>
+              <p>Adjust layouts, ticker text, schedules, colors, and backgrounds while connected displays update in real time.</p>
+            </article>
+          </div>
+        </section>
 
-    <section aria-labelledby="tips-title">
-      <div class="note">
-        <h2 id="tips-title">Operating Notes</h2>
-        <ul class="note-list">
-          <li>Use stable Wi-Fi or Ethernet when first loading a new playlist so the display device can cache the files.</li>
-          <li>Keep large videos short and compressed when using free hosting with limited storage.</li>
-          <li>For production, use a strong admin password and durable storage for uploaded media and saved settings.</li>
-          <li>If a screen is replaced or the browser cache is cleared, open the display player online again to rebuild its cache.</li>
-        </ul>
-      </div>
-    </section>
+        <section class="content-section" id="capabilities" aria-labelledby="capabilities-title">
+          <div class="showcase-panel">
+            <div class="display-mock" aria-label="ScrinDeck feature preview">
+              <div class="mock-layout">
+                <div class="mock-zone main">Playlist Loop</div>
+                <div class="mock-zone">Template Zone</div>
+                <div class="mock-zone">Text Slide</div>
+                <div class="mock-zone ticker">
+                  <span class="ticker-time">12:45</span>
+                  <span>Permanent, scheduled, or hidden ticker messages run here</span>
+                </div>
+              </div>
+            </div>
 
-    <footer>
-      ScrinDeck digital signage control panel and display player.
-    </footer>
-  </main>
+            <div class="info-stack">
+              <article class="glass-tile">
+                <span class="material-icons-round">cached</span>
+                <h3>Offline-ready playback</h3>
+                <p>When a playlist loads online, the display device downloads the media into browser cache for repeat playback.</p>
+              </article>
+              <article class="glass-tile">
+                <span class="material-icons-round">dashboard_customize</span>
+                <h3>Template control</h3>
+                <p>Layouts keep media in its assigned zones, with transition animation and custom collage background options.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" aria-labelledby="what-title">
+          <div class="section-head">
+            <h2 id="what-title">What it manages.</h2>
+            <p class="section-copy">
+              ScrinDeck covers the everyday signage surface: assets, playlists, layouts,
+              ticker overlays, text slides, schedules, and display settings.
+            </p>
+          </div>
+
+          <div class="about-grid">
+            <article class="glass-tile">
+              <span class="material-icons-round">perm_media</span>
+              <h3>Media assets</h3>
+              <p>Images and videos can be uploaded, reused, placed into playlists, and assigned to template areas.</p>
+            </article>
+            <article class="glass-tile">
+              <span class="material-icons-round">subtitles</span>
+              <h3>Ticker overlay</h3>
+              <p>Time on the left, scrolling content in the middle, and a custom label on the right.</p>
+            </article>
+            <article class="glass-tile">
+              <span class="material-icons-round">schedule</span>
+              <h3>Scheduling</h3>
+              <p>Timed notices and ticker visibility settings help screens change automatically when needed.</p>
+            </article>
+            <article class="glass-tile">
+              <span class="material-icons-round">palette</span>
+              <h3>Display styling</h3>
+              <p>Set font size, themes, ticker colors, playback backgrounds, and visual presentation settings.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-section" id="notes" aria-labelledby="notes-title">
+          <div class="section-head">
+            <h2 id="notes-title">Operating notes.</h2>
+            <p class="section-copy">
+              Keep the first playlist load online so the display device can cache media. For production,
+              use persistent hosting storage and a strong admin password.
+            </p>
+          </div>
+
+          <div class="steps-grid">
+            <article class="step-tile">
+              <div class="step-number">A</div>
+              <h3>Storage matters</h3>
+              <p>Uploaded media and saved settings should live on durable storage so deploys do not erase them.</p>
+            </article>
+            <article class="step-tile">
+              <div class="step-number">B</div>
+              <h3>Cache needs a first load</h3>
+              <p>If a device is new or its browser cache was cleared, open the display online once before relying on offline play.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer-line">
+        <span>ScrinDeck digital signage control panel and display player.</span>
+        <span><a href="/">Home</a> / <a href="/control.html">Control</a> / <a href="/display.html" target="_blank" rel="noreferrer">Display</a></span>
+      </footer>
+    </div>
+  </div>
 </body>
 </html>

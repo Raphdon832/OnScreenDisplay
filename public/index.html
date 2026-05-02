@@ -4,137 +4,188 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ScrinDeck</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      color: #ffffff;
-      min-height: 100vh;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: clamp(20px, 5vw, 40px);
-      overflow-x: hidden;
-    }
-    
-    .display-mark {
-      font-size: clamp(48px, 12vw, 80px);
-      margin-bottom: clamp(18px, 5vw, 30px);
-    }
-    
-    h1 {
-      font-size: clamp(32px, 9vw, 48px);
-      font-weight: 300;
-      margin-bottom: 20px;
-    }
-    
-    p {
-      max-width: 680px;
-      font-size: clamp(16px, 4vw, 20px);
-      opacity: 0.8;
-      margin-bottom: 40px;
-    }
-    
-    .links {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    a {
-      display: inline-block;
-      padding: 15px 30px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      text-decoration: none;
-      border-radius: 10px;
-      font-size: 18px;
-      transition: all 0.3s ease;
-    }
-    
-    a:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-    }
-    
-    .instructions {
-      margin-top: 60px;
-      text-align: left;
-      background: rgba(255,255,255,0.05);
-      padding: clamp(18px, 5vw, 30px);
-      border-radius: 15px;
-      width: min(100%, 640px);
-      max-width: 640px;
-    }
-    
-    .instructions h3 {
-      margin-bottom: 15px;
-      font-size: 20px;
-    }
-    
-    .instructions ol {
-      padding-left: 20px;
-      line-height: 2;
-      opacity: 0.9;
-    }
-    
-    .instructions code {
-      background: rgba(255,255,255,0.1);
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
-
-    @media (max-width: 520px) {
-      body {
-        justify-content: flex-start;
-      }
-
-      .links {
-        width: 100%;
-      }
-
-      a {
-        width: 100%;
-        padding: 14px 18px;
-        font-size: 16px;
-      }
-
-      .instructions {
-        margin-top: 32px;
-        font-size: 14px;
-      }
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com/css2">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="/marketing.css">
 </head>
 <body>
-  <div class="display-mark">▣</div>
-  <h1>ScrinDeck</h1>
-  <p>Manage media playlists, text slides, and scheduled notices for digital displays.</p>
-  
-  <div class="links">
-    <a href="/display.html" target="_blank">Open Display Player</a>
-    <a href="/control.html" target="_blank">Sign in to Control Panel</a>
-    <a href="/about.html">About ScrinDeck</a>
-  </div>
-  
-  <div class="instructions">
-    <h3>How to Use:</h3>
-    <ol>
-      <li>Open the <strong>Display Player</strong> on your screen or media device (full screen with <code>F11</code>)</li>
-      <li>Open the <strong>Control Panel</strong> on your phone, tablet, or computer</li>
-      <li>Use the control panel to:
-        <ul>
-          <li>Upload image and video assets</li>
-          <li>Build a repeatable media playlist</li>
-          <li>Show text slides or scheduled notices</li>
-        </ul>
-      </li>
-      <li>Use arrow keys <code>←</code> <code>→</code> to navigate, <code>Esc</code> to clear</li>
-    </ol>
+  <div class="page-wrap">
+    <div class="site-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="ScrinDeck home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>ScrinDeck</span>
+        </a>
+
+        <nav class="nav-pill" aria-label="Primary">
+          <a class="active" href="/">Home</a>
+          <a href="/about.html">About</a>
+          <a href="#assets">Assets</a>
+          <a href="#features">Features</a>
+          <a href="#setup">Setup</a>
+          <a href="/control.html">Control</a>
+        </nav>
+
+        <div class="top-actions">
+          <a class="icon-link" href="/display.html" target="_blank" rel="noreferrer" aria-label="Open display player">
+            <span class="screen-glyph" aria-hidden="true"></span>
+          </a>
+          <a class="account-link" href="/control.html">
+            <span class="material-icons-round">person_outline</span>
+            <span>Sign In</span>
+          </a>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero-stage" aria-labelledby="home-title">
+          <div class="stage-lines" aria-hidden="true">
+            <div class="line-node left top-left">
+              <span class="node-icon"><span class="material-icons-round">dashboard_customize</span></span>
+              <span class="node-copy"><strong>Layouts</strong><span>Multi-zone templates</span></span>
+            </div>
+            <div class="line-node left bottom-left">
+              <span class="node-icon"><span class="material-icons-round">subtitles</span></span>
+              <span class="node-copy"><strong>Ticker</strong><span>Live lower-third text</span></span>
+            </div>
+            <div class="line-node right top-right">
+              <span class="node-copy"><strong>Assets</strong><span>Images and videos</span></span>
+              <span class="node-icon"><span class="material-icons-round">perm_media</span></span>
+            </div>
+            <div class="line-node right bottom-right">
+              <span class="node-copy"><strong>Cache</strong><span>Offline repeat play</span></span>
+              <span class="node-icon"><span class="material-icons-round">cached</span></span>
+            </div>
+          </div>
+
+          <div class="hero-content">
+            <div class="kicker">
+              <span class="material-icons-round">auto_awesome</span>
+              Upload media. Arrange layouts. Keep screens running.
+            </div>
+            <h1 id="home-title">ScrinDeck <span class="headline-soft">for every screen</span></h1>
+            <p class="lead">
+              A real-time digital signage deck for playlists, collages, videos, images,
+              scrolling tickers, scheduled notices, and display-side media caching.
+            </p>
+            <div class="hero-actions">
+              <a class="btn" href="/control.html">
+                Open Control
+                <span class="material-icons-round">north_east</span>
+              </a>
+              <a class="btn primary" href="/about.html">Discover More</a>
+            </div>
+          </div>
+
+          <div class="scroll-hint" aria-hidden="true">
+            <span class="material-icons-round">south</span>
+            01/03 . Scroll down
+          </div>
+
+          <div class="stage-status" aria-hidden="true">
+            <strong>Display horizons</strong>
+            <div class="progress-bars">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </section>
+
+        <div class="brand-row" aria-label="ScrinDeck platform capabilities">
+          <span><span class="material-icons-round">cloud_done</span> Railway</span>
+          <span><span class="material-icons-round">hub</span> Socket.io</span>
+          <span><span class="material-icons-round">dns</span> Express</span>
+          <span><span class="material-icons-round">storage</span> Cache API</span>
+          <span><span class="material-icons-round">devices</span> Browser</span>
+          <span><span class="material-icons-round">schedule</span> Scheduler</span>
+        </div>
+
+        <section class="content-section" id="features" aria-labelledby="features-title">
+          <div class="section-head">
+            <h2 id="features-title">Built for live screen control.</h2>
+            <p class="section-copy">
+              ScrinDeck gives operators one remote for media uploads, playlist order,
+              layout zones, ticker styling, and schedule changes without restarting the display.
+            </p>
+          </div>
+
+          <div class="feature-grid">
+            <article class="glass-tile">
+              <span class="material-icons-round">perm_media</span>
+              <h3>Media playlist</h3>
+              <p>Upload images and videos, set durations, and keep repetitive playback simple.</p>
+            </article>
+            <article class="glass-tile">
+              <span class="material-icons-round">view_quilt</span>
+              <h3>Montage layouts</h3>
+              <p>Place media into full-screen, split, and collage templates with custom backgrounds.</p>
+            </article>
+            <article class="glass-tile">
+              <span class="material-icons-round">sync</span>
+              <h3>Real-time updates</h3>
+              <p>Change content from the control panel and connected display players update immediately.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-section" id="assets" aria-labelledby="assets-title">
+          <div class="showcase-panel">
+            <div class="display-mock" aria-label="ScrinDeck display layout preview">
+              <div class="mock-layout">
+                <div class="mock-zone main">Main Video</div>
+                <div class="mock-zone">Image Panel</div>
+                <div class="mock-zone">Notice Slide</div>
+                <div class="mock-zone ticker">
+                  <span class="ticker-time">12:45</span>
+                  <span>Headlines, info, news, and custom announcements scroll here</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-stack">
+              <article class="glass-tile">
+                <span class="material-icons-round">cloud_download</span>
+                <h3>Cached media playback</h3>
+                <p>The display player downloads playlist files after opening online so repeat play can continue through unstable internet.</p>
+              </article>
+              <article class="glass-tile">
+                <span class="material-icons-round">palette</span>
+                <h3>Visual customization</h3>
+                <p>Control ticker colors, ticker speed, schedule behavior, collage backgrounds, and media placement from the remote.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="setup" aria-labelledby="setup-title">
+          <div class="section-head">
+            <h2 id="setup-title">Start with two browser tabs.</h2>
+            <p class="section-copy">
+              Open the display player on the screen device, sign in to the control panel on your remote device,
+              then upload content and send it live.
+            </p>
+          </div>
+
+          <div class="steps-grid">
+            <article class="step-tile">
+              <div class="step-number">1</div>
+              <h3>Open the display</h3>
+              <p>Launch <strong>/display.html</strong> on the TV, kiosk, tablet, or player device.</p>
+            </article>
+            <article class="step-tile">
+              <div class="step-number">2</div>
+              <h3>Control from anywhere</h3>
+              <p>Use <strong>/control.html</strong> to upload media, pick templates, and update text.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer-line">
+        <span>ScrinDeck digital signage.</span>
+        <span>Real-time media, layouts, tickers, and cached playback.</span>
+      </footer>
+    </div>
   </div>
 </body>
 </html>
