@@ -31,7 +31,7 @@ Open:
 - Display Player: `http://localhost:3000/display.html`
 - About Page: `http://localhost:3000/about.html`
 
-Local development uses admin password `1234` unless you set `ADMIN_PASSWORD`.
+Local development uses admin password `screen` unless you set `ADMIN_PASSWORD`.
 
 ## Authentication
 

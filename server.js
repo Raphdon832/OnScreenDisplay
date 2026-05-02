@@ -25,7 +25,7 @@ const mediaDir = usePersistentRoot
   : path.join(__dirname, 'uploads', 'media');
 const mediaLibraryPath = path.join(dataDir, 'media.json');
 const displayStatePath = path.join(dataDir, 'display-state.json');
-const adminPassword = process.env.ADMIN_PASSWORD || (isProduction ? '' : '1234');
+const adminPassword = process.env.ADMIN_PASSWORD || (isProduction ? '' : 'screen');
 const authSecret = process.env.AUTH_SECRET || (isProduction ? '' : 'dev-auth-secret-change-me');
 const authCookieName = 'onscreen_auth';
 const authMaxAgeMs = 1000 * 60 * 60 * 24 * 30;
@@ -351,7 +351,12 @@ const supportedLayouts = new Set([
   'top-strip',
   'bottom-strip',
   'mosaic',
-  'six'
+  'six',
+  'portrait-duo',
+  'portrait-trio',
+  'portrait-hero',
+  'portrait-stack',
+  'portrait-grid'
 ]);
 
 function normalizeMediaLayout(layout) {

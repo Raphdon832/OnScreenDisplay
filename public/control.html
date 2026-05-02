@@ -524,6 +524,44 @@
       grid-template-rows: repeat(2, 1fr);
     }
 
+    .layout-preview.portrait-duo,
+    .layout-preview.portrait-trio,
+    .layout-preview.portrait-hero,
+    .layout-preview.portrait-stack,
+    .layout-preview.portrait-grid {
+      width: 38px;
+      height: 54px;
+    }
+
+    .layout-preview.portrait-duo {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(2, 1fr);
+    }
+
+    .layout-preview.portrait-trio {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(3, 1fr);
+    }
+
+    .layout-preview.portrait-hero {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1.7fr 1fr;
+    }
+
+    .layout-preview.portrait-hero span:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .layout-preview.portrait-stack {
+      grid-template-columns: 1fr;
+      grid-template-rows: 0.8fr 1.7fr 0.8fr;
+    }
+
+    .layout-preview.portrait-grid {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+    }
+
     .layout-btn strong {
       font-size: 12px;
       font-weight: 600;
@@ -1697,6 +1735,26 @@
                 <div class="layout-preview six"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                 <strong>Six</strong>
               </button>
+              <button class="layout-btn" data-layout="portrait-duo" onclick="setMediaLayout('portrait-duo')">
+                <div class="layout-preview portrait-duo"><span></span><span></span></div>
+                <strong>Portrait Duo</strong>
+              </button>
+              <button class="layout-btn" data-layout="portrait-trio" onclick="setMediaLayout('portrait-trio')">
+                <div class="layout-preview portrait-trio"><span></span><span></span><span></span></div>
+                <strong>Portrait Trio</strong>
+              </button>
+              <button class="layout-btn" data-layout="portrait-hero" onclick="setMediaLayout('portrait-hero')">
+                <div class="layout-preview portrait-hero"><span></span><span></span><span></span></div>
+                <strong>Portrait Hero</strong>
+              </button>
+              <button class="layout-btn" data-layout="portrait-stack" onclick="setMediaLayout('portrait-stack')">
+                <div class="layout-preview portrait-stack"><span></span><span></span><span></span></div>
+                <strong>Poster Stack</strong>
+              </button>
+              <button class="layout-btn" data-layout="portrait-grid" onclick="setMediaLayout('portrait-grid')">
+                <div class="layout-preview portrait-grid"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <strong>Portrait Grid</strong>
+              </button>
             </div>
             <div class="zone-assignment-grid" id="zoneAssignmentGrid"></div>
           </div>
@@ -2153,7 +2211,12 @@ Follow the on-screen notices for current updates</textarea>
       'top-strip': ['Top Banner', 'Bottom Left', 'Bottom Right'],
       'bottom-strip': ['Bottom Banner', 'Top Left', 'Top Right'],
       mosaic: ['Feature', 'Top Center', 'Top Right', 'Bottom Center', 'Bottom Right'],
-      six: ['Top Left', 'Top Center', 'Top Right', 'Bottom Left', 'Bottom Center', 'Bottom Right']
+      six: ['Top Left', 'Top Center', 'Top Right', 'Bottom Left', 'Bottom Center', 'Bottom Right'],
+      'portrait-duo': ['Top', 'Bottom'],
+      'portrait-trio': ['Top', 'Middle', 'Bottom'],
+      'portrait-hero': ['Hero', 'Lower Left', 'Lower Right'],
+      'portrait-stack': ['Header', 'Feature', 'Footer'],
+      'portrait-grid': ['Top Left', 'Top Right', 'Middle Left', 'Middle Right', 'Bottom Left', 'Bottom Right']
     };
 
     function initAccordions() {

@@ -290,6 +290,31 @@
       grid-template-rows: repeat(2, 1fr);
     }
 
+    .media-stage.layout-portrait-duo {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(2, 1fr);
+    }
+
+    .media-stage.layout-portrait-trio {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(3, 1fr);
+    }
+
+    .media-stage.layout-portrait-hero {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1.7fr 1fr;
+    }
+
+    .media-stage.layout-portrait-stack {
+      grid-template-columns: 1fr;
+      grid-template-rows: 0.8fr 1.7fr 0.8fr;
+    }
+
+    .media-stage.layout-portrait-grid {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+    }
+
     .media-zone {
       position: relative;
       overflow: hidden;
@@ -329,6 +354,10 @@
 
     .layout-bottom-strip .media-zone:nth-child(3) {
       grid-column: 2;
+    }
+
+    .layout-portrait-hero .media-zone:first-child {
+      grid-column: 1 / -1;
     }
 
     .media-zone img,
@@ -1133,7 +1162,12 @@
         'top-strip': 3,
         'bottom-strip': 3,
         mosaic: 5,
-        six: 6
+        six: 6,
+        'portrait-duo': 2,
+        'portrait-trio': 3,
+        'portrait-hero': 3,
+        'portrait-stack': 3,
+        'portrait-grid': 6
       }[layout] || 1;
     }
 
