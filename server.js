@@ -359,6 +359,17 @@ const supportedLayouts = new Set([
   'portrait-grid'
 ]);
 
+const supportedLogoPositions = new Set([
+  'top-left',
+  'top-center',
+  'top-right',
+  'middle-left',
+  'middle-right',
+  'bottom-left',
+  'bottom-center',
+  'bottom-right'
+]);
+
 function normalizeMediaLayout(layout) {
   return supportedLayouts.has(layout) ? layout : 'single';
 }
@@ -435,6 +446,22 @@ function normalizeBackground(background = {}) {
   };
 }
 
+function normalizeLogoOverlay(overlay = {}) {
+  const imageAsset = overlay.imageId
+    ? mediaLibrary.find((asset) => asset.id === overlay.imageId && asset.type === 'image')
+    : null;
+
+  return {
+    enabled: overlay.enabled === true && Boolean(imageAsset),
+    imageId: imageAsset ? imageAsset.id : '',
+    imageUrl: imageAsset ? imageAsset.url : '',
+    position: supportedLogoPositions.has(overlay.position) ? overlay.position : 'top-right',
+    size: Math.max(40, Math.min(360, parseInt(overlay.size || 140, 10))),
+    opacity: Math.max(0.1, Math.min(1, Number(overlay.opacity ?? 1))),
+    margin: Math.max(0, Math.min(96, parseInt(overlay.margin || 24, 10)))
+  };
+}
+
 function getDefaultMediaState() {
   return {
     currentIndex: 0,
@@ -472,6 +499,15 @@ function getDefaultMediaState() {
       imageFit: 'cover',
       opacity: 1,
       blur: 0
+    },
+    logoOverlay: {
+      enabled: false,
+      imageId: '',
+      imageUrl: '',
+      position: 'top-right',
+      size: 140,
+      opacity: 1,
+      margin: 24
     }
   };
 }
@@ -509,6 +545,10 @@ function normalizeMediaState(mediaData = {}, previousMedia = getDefaultMediaStat
     background: normalizeBackground({
       ...(previousMedia.background || {}),
       ...(mediaData.background || {})
+    }),
+    logoOverlay: normalizeLogoOverlay({
+      ...(previousMedia.logoOverlay || {}),
+      ...(mediaData.logoOverlay || {})
     }),
     currentIndex: Math.min(
       Math.max(0, requestedIndex),
@@ -771,6 +811,14 @@ app.delete('/api/media/:id', (req, res) => {
       currentState.media.background = {
         ...currentState.media.background,
         type: 'color',
+        imageId: '',
+        imageUrl: ''
+      };
+    }
+    if (currentState.media.logoOverlay && currentState.media.logoOverlay.imageId === req.params.id) {
+      currentState.media.logoOverlay = {
+        ...currentState.media.logoOverlay,
+        enabled: false,
         imageId: '',
         imageUrl: ''
       };

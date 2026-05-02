@@ -239,6 +239,68 @@
       transform: scale(1.03);
     }
 
+    .station-logo-overlay {
+      position: absolute;
+      z-index: 12;
+      width: auto;
+      height: auto;
+      max-width: min(var(--logo-size, 140px), 34vw);
+      max-height: min(var(--logo-size, 140px), 28vh);
+      object-fit: contain;
+      opacity: var(--logo-opacity, 1);
+      pointer-events: none;
+      filter: drop-shadow(0 10px 24px rgba(0,0,0,0.46));
+      transition: opacity 0.25s ease, transform 0.25s ease, top 0.25s ease, right 0.25s ease, bottom 0.25s ease, left 0.25s ease;
+    }
+
+    .station-logo-overlay.anchor-top-left {
+      top: var(--logo-margin, 24px);
+      left: var(--logo-margin, 24px);
+    }
+
+    .station-logo-overlay.anchor-top-center {
+      top: var(--logo-margin, 24px);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .station-logo-overlay.anchor-top-right {
+      top: var(--logo-margin, 24px);
+      right: var(--logo-margin, 24px);
+    }
+
+    .station-logo-overlay.anchor-middle-left {
+      top: 50%;
+      left: var(--logo-margin, 24px);
+      transform: translateY(-50%);
+    }
+
+    .station-logo-overlay.anchor-middle-right {
+      top: 50%;
+      right: var(--logo-margin, 24px);
+      transform: translateY(-50%);
+    }
+
+    .station-logo-overlay.anchor-bottom-left {
+      bottom: var(--logo-bottom-offset, var(--logo-margin, 24px));
+      left: var(--logo-margin, 24px);
+    }
+
+    .station-logo-overlay.anchor-bottom-center {
+      bottom: var(--logo-bottom-offset, var(--logo-margin, 24px));
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .station-logo-overlay.anchor-bottom-right {
+      bottom: var(--logo-bottom-offset, var(--logo-margin, 24px));
+      right: var(--logo-margin, 24px);
+    }
+
+    .station-logo-overlay.avoid-ticker {
+      --logo-bottom-offset: calc(var(--logo-margin, 24px) + var(--ticker-logo-offset, clamp(54px, 6.5vh, 76px)) + 10px);
+    }
+
     .media-stage.layout-single {
       grid-template-columns: 1fr;
       grid-template-rows: 1fr;
@@ -528,6 +590,7 @@
       }
 
       .ticker-overlay {
+        --ticker-logo-offset: clamp(50px, 7vh, 64px);
         grid-template-columns: minmax(76px, 24vw) 1fr;
         height: clamp(50px, 7vh, 64px);
       }
@@ -661,6 +724,7 @@
       <div class="collage-background" id="collageBackground"></div>
       <div class="media-empty" id="mediaEmpty">No media playlist loaded</div>
     </div>
+    <img class="station-logo-overlay hidden" id="stationLogoOverlay" alt="">
     <div class="ticker-overlay hidden" id="tickerOverlay">
       <div class="ticker-time" id="tickerTime">00:00</div>
       <div class="ticker-scroll">
@@ -714,6 +778,15 @@
           imageFit: 'cover',
           opacity: 1,
           blur: 0
+        },
+        logoOverlay: {
+          enabled: false,
+          imageId: '',
+          imageUrl: '',
+          position: 'top-right',
+          size: 140,
+          opacity: 1,
+          margin: 24
         }
       },
       display: { fontSize: 48, theme: 'dark' }
@@ -724,8 +797,10 @@
     let mediaTimer = null;
     let renderedMediaKey = '';
     let renderedTickerKey = '';
+    let renderedLogoKey = '';
     let lastRenderedLayout = '';
     let currentMediaObjectUrls = [];
+    let currentLogoObjectUrl = '';
     let localMediaIndex = currentState.media.currentIndex || 0;
     let tickerClockTimer = null;
     let tickerScheduleTimer = null;
@@ -752,6 +827,7 @@
 
     const mediaStage = document.getElementById('mediaStage');
     const mediaEmpty = document.getElementById('mediaEmpty');
+    const stationLogoOverlay = document.getElementById('stationLogoOverlay');
     const tickerOverlay = document.getElementById('tickerOverlay');
     const tickerTime = document.getElementById('tickerTime');
     const tickerTrack = document.getElementById('tickerTrack');
@@ -825,6 +901,10 @@
           background: {
             ...defaultState.media.background,
             ...((state.media && state.media.background) || {})
+          },
+          logoOverlay: {
+            ...defaultState.media.logoOverlay,
+            ...((state.media && state.media.logoOverlay) || {})
           },
           ticker: {
             ...defaultState.media.ticker,
@@ -939,6 +1019,7 @@
           mediaScreen.classList.remove('hidden');
           applyCollageBackground(state.media.background);
           renderTicker(state.media.ticker);
+          renderLogoOverlay(state.media.logoOverlay, state.media.ticker);
           renderMedia(state);
           break;
       }
@@ -956,12 +1037,19 @@
       mediaStage.querySelectorAll('.media-zone').forEach((zone) => zone.remove());
       mediaEmpty.classList.add('hidden');
       tickerOverlay.classList.add('hidden');
+      stationLogoOverlay.className = 'station-logo-overlay hidden';
+      stationLogoOverlay.removeAttribute('src');
+      renderedLogoKey = '';
       stopTickerClock();
       stopTickerSchedule();
       lastRenderedLayout = '';
 
       currentMediaObjectUrls.forEach((url) => URL.revokeObjectURL(url));
       currentMediaObjectUrls = [];
+      if (currentLogoObjectUrl) {
+        URL.revokeObjectURL(currentLogoObjectUrl);
+        currentLogoObjectUrl = '';
+      }
     }
 
     function applyCollageBackground(background = {}) {
@@ -979,6 +1067,80 @@
       collageBackground.style.backgroundSize = size;
       collageBackground.style.opacity = String(background.opacity ?? 1);
       collageBackground.style.filter = `blur(${background.blur || 0}px)`;
+    }
+
+    async function renderLogoOverlay(overlay = {}, ticker = {}) {
+      const position = [
+        'top-left',
+        'top-center',
+        'top-right',
+        'middle-left',
+        'middle-right',
+        'bottom-left',
+        'bottom-center',
+        'bottom-right'
+      ].includes(overlay.position) ? overlay.position : 'top-right';
+      const size = Math.max(40, Math.min(360, parseInt(overlay.size || 140, 10)));
+      const opacity = Math.max(0.1, Math.min(1, Number(overlay.opacity ?? 1)));
+      const margin = Math.max(0, Math.min(96, parseInt(overlay.margin || 24, 10)));
+
+      if (!overlay.enabled || !overlay.imageUrl) {
+        stationLogoOverlay.className = 'station-logo-overlay hidden';
+        stationLogoOverlay.removeAttribute('src');
+        renderedLogoKey = '';
+        if (currentLogoObjectUrl) {
+          URL.revokeObjectURL(currentLogoObjectUrl);
+          currentLogoObjectUrl = '';
+        }
+        return;
+      }
+
+      const logoKey = `${overlay.imageUrl}:${position}:${size}:${opacity}:${margin}`;
+      if (renderedLogoKey === logoKey) {
+        updateLogoTickerAvoidance(ticker);
+        return;
+      }
+
+      renderedLogoKey = logoKey;
+      if (currentLogoObjectUrl) {
+        URL.revokeObjectURL(currentLogoObjectUrl);
+        currentLogoObjectUrl = '';
+      }
+
+      let source = overlay.imageUrl;
+      try {
+        source = await getMediaObjectUrl({ url: overlay.imageUrl });
+      } catch (err) {
+        console.log('Falling back to network logo URL:', err);
+      }
+
+      if (renderedLogoKey !== logoKey) {
+        if (source.startsWith('blob:')) URL.revokeObjectURL(source);
+        return;
+      }
+
+      if (source.startsWith('blob:')) {
+        currentLogoObjectUrl = source;
+      }
+
+      stationLogoOverlay.style.setProperty('--logo-size', `${size}px`);
+      stationLogoOverlay.style.setProperty('--logo-opacity', String(opacity));
+      stationLogoOverlay.style.setProperty('--logo-margin', `${margin}px`);
+      stationLogoOverlay.src = source;
+      stationLogoOverlay.className = `station-logo-overlay anchor-${position}`;
+      updateLogoTickerAvoidance(ticker);
+    }
+
+    function updateLogoTickerAvoidance(ticker = {}, visibleOverride) {
+      const hasTicker = ticker.enabled === true && Boolean((ticker.text || '').trim());
+      const isBottomAnchor = stationLogoOverlay.classList.contains('anchor-bottom-left')
+        || stationLogoOverlay.classList.contains('anchor-bottom-center')
+        || stationLogoOverlay.classList.contains('anchor-bottom-right');
+      const tickerVisible = typeof visibleOverride === 'boolean'
+        ? visibleOverride
+        : isTickerVisibleNow(ticker.schedule || {});
+
+      stationLogoOverlay.classList.toggle('avoid-ticker', hasTicker && tickerVisible && isBottomAnchor);
     }
 
     function renderTicker(ticker = {}) {
@@ -1030,7 +1192,9 @@
     }
 
     function applyTickerSchedule(ticker) {
-      tickerOverlay.classList.toggle('hidden', !isTickerVisibleNow(ticker.schedule || {}));
+      const visible = isTickerVisibleNow(ticker.schedule || {});
+      tickerOverlay.classList.toggle('hidden', !visible);
+      updateLogoTickerAvoidance(ticker, visible);
     }
 
     function isTickerVisibleNow(schedule = {}) {
@@ -1140,6 +1304,10 @@
 
       if (state.media.background && state.media.background.imageUrl) {
         byUrl.set(state.media.background.imageUrl, { url: state.media.background.imageUrl });
+      }
+
+      if (state.media.logoOverlay && state.media.logoOverlay.imageUrl) {
+        byUrl.set(state.media.logoOverlay.imageUrl, { url: state.media.logoOverlay.imageUrl });
       }
 
       return [...byUrl.values()];

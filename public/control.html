@@ -1840,6 +1840,59 @@
             <p class="muted-text">This overlays the media layout and keeps scrolling across the bottom of the display.</p>
           </div>
 
+          <div class="setting-card" data-accordion-icon="branding_watermark">
+            <h4>Station Logo Overlay</h4>
+            <label class="ticker-toggle">
+              <input type="checkbox" id="logoOverlayEnabled">
+              Show station logo
+            </label>
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+              <div class="form-group">
+                <label>Logo Image</label>
+                <select id="logoOverlayImage">
+                  <option value="">Select image...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Screen Anchor</label>
+                <select id="logoOverlayPosition">
+                  <option value="top-left">Top Left</option>
+                  <option value="top-center">Top Center</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="middle-left">Middle Left</option>
+                  <option value="middle-right">Middle Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="bottom-center">Bottom Center</option>
+                  <option value="bottom-right">Bottom Right</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
+              <div class="form-group">
+                <label>Logo Size</label>
+                <div class="range-control">
+                  <input type="range" id="logoOverlaySize" min="40" max="360" value="140">
+                  <span id="logoOverlaySizeValue">140px</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Opacity</label>
+                <div class="range-control">
+                  <input type="range" id="logoOverlayOpacity" min="10" max="100" value="100">
+                  <span id="logoOverlayOpacityValue">100%</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Edge Margin</label>
+                <div class="range-control">
+                  <input type="range" id="logoOverlayMargin" min="0" max="96" value="24">
+                  <span id="logoOverlayMarginValue">24px</span>
+                </div>
+              </div>
+            </div>
+            <p class="muted-text">Choose an uploaded image and pin it over the display like a TV station mark.</p>
+          </div>
+
           <div class="setting-card" data-accordion-icon="wallpaper">
             <h4>Collage Background</h4>
             <div class="form-row" style="grid-template-columns: 1fr 1fr;">
@@ -2189,6 +2242,15 @@ Follow the on-screen notices for current updates</textarea>
           imageFit: 'cover',
           opacity: 1,
           blur: 0
+        },
+        logoOverlay: {
+          enabled: false,
+          imageId: '',
+          imageUrl: '',
+          position: 'top-right',
+          size: 140,
+          opacity: 1,
+          margin: 24
         }
       },
       display: { fontSize: 48, theme: 'dark' }
@@ -2843,6 +2905,15 @@ Follow the on-screen notices for current updates</textarea>
             imageFit: 'cover',
             opacity: 1,
             blur: 0
+          },
+          logoOverlay: {
+            enabled: false,
+            imageId: '',
+            imageUrl: '',
+            position: 'top-right',
+            size: 140,
+            opacity: 1,
+            margin: 24
           }
         };
       }
@@ -2875,6 +2946,16 @@ Follow the on-screen notices for current updates</textarea>
         opacity: 1,
         blur: 0,
         ...(currentState.media.background || {})
+      };
+      currentState.media.logoOverlay = {
+        enabled: false,
+        imageId: '',
+        imageUrl: '',
+        position: 'top-right',
+        size: 140,
+        opacity: 1,
+        margin: 24,
+        ...(currentState.media.logoOverlay || {})
       };
       selectedMediaLayout = currentState.media.layout || selectedMediaLayout || 'single';
 
@@ -2928,6 +3009,14 @@ Follow the on-screen notices for current updates</textarea>
       setControlValue('collageBgOpacity', Math.round((currentState.media.background.opacity ?? 1) * 100));
       setControlValue('collageBgBlur', currentState.media.background.blur || 0);
       updateBackgroundRangeLabels();
+      renderLogoOverlayImageOptions();
+      document.getElementById('logoOverlayEnabled').checked = currentState.media.logoOverlay.enabled === true;
+      setControlValue('logoOverlayImage', currentState.media.logoOverlay.imageId || '');
+      setControlValue('logoOverlayPosition', currentState.media.logoOverlay.position || 'top-right');
+      setControlValue('logoOverlaySize', currentState.media.logoOverlay.size || 140);
+      setControlValue('logoOverlayOpacity', Math.round((currentState.media.logoOverlay.opacity ?? 1) * 100));
+      setControlValue('logoOverlayMargin', currentState.media.logoOverlay.margin || 24);
+      updateLogoOverlayRangeLabels();
       updateLayoutButtons();
     }
     
@@ -2954,6 +3043,7 @@ Follow the on-screen notices for current updates</textarea>
       renderMediaLibrary();
       renderZoneAssignments();
       renderBackgroundImageOptions();
+      renderLogoOverlayImageOptions();
     });
 
     function escapeHtml(value) {
@@ -3013,11 +3103,34 @@ Follow the on-screen notices for current updates</textarea>
       select.value = currentValue;
     }
 
+    function renderLogoOverlayImageOptions() {
+      const select = document.getElementById('logoOverlayImage');
+      if (!select) return;
+
+      const currentValue = select.value || (currentState.media.logoOverlay && currentState.media.logoOverlay.imageId) || '';
+      const options = mediaLibrary
+        .filter((asset) => asset.type === 'image')
+        .map((asset) => `<option value="${asset.id}">${escapeHtml(asset.name)}</option>`)
+        .join('');
+
+      select.innerHTML = '<option value="">Select image...</option>' + options;
+      select.value = currentValue;
+    }
+
     function updateBackgroundRangeLabels() {
       const opacity = document.getElementById('collageBgOpacity').value;
       const blur = document.getElementById('collageBgBlur').value;
       document.getElementById('collageBgOpacityValue').textContent = `${opacity}%`;
       document.getElementById('collageBgBlurValue').textContent = `${blur}px`;
+    }
+
+    function updateLogoOverlayRangeLabels() {
+      const size = document.getElementById('logoOverlaySize').value;
+      const opacity = document.getElementById('logoOverlayOpacity').value;
+      const margin = document.getElementById('logoOverlayMargin').value;
+      document.getElementById('logoOverlaySizeValue').textContent = `${size}px`;
+      document.getElementById('logoOverlayOpacityValue').textContent = `${opacity}%`;
+      document.getElementById('logoOverlayMarginValue').textContent = `${margin}px`;
     }
 
     function updateTickerSpeedLabel() {
@@ -3059,13 +3172,25 @@ Follow the on-screen notices for current updates</textarea>
       };
     }
 
+    function getLogoOverlaySettings() {
+      return {
+        enabled: document.getElementById('logoOverlayEnabled').checked,
+        imageId: document.getElementById('logoOverlayImage').value,
+        position: document.getElementById('logoOverlayPosition').value,
+        size: parseInt(document.getElementById('logoOverlaySize').value, 10),
+        opacity: parseInt(document.getElementById('logoOverlayOpacity').value, 10) / 100,
+        margin: parseInt(document.getElementById('logoOverlayMargin').value, 10)
+      };
+    }
+
     function getMediaSettings() {
       return {
         fit: document.getElementById('mediaFitSelect').value,
         muted: document.getElementById('mediaMutedSelect').value === 'true',
         layout: selectedMediaLayout || 'single',
         ticker: getTickerSettings(),
-        background: getBackgroundSettings()
+        background: getBackgroundSettings(),
+        logoOverlay: getLogoOverlaySettings()
       };
     }
 
@@ -3282,6 +3407,10 @@ Follow the on-screen notices for current updates</textarea>
       if (document.getElementById('collageBgImage').value === assetId) {
         document.getElementById('collageBgImage').value = '';
         document.getElementById('collageBgType').value = 'color';
+      }
+      if (document.getElementById('logoOverlayImage').value === assetId) {
+        document.getElementById('logoOverlayImage').value = '';
+        document.getElementById('logoOverlayEnabled').checked = false;
       }
       socket.emit('get-media');
       scheduleMediaUpdate();
@@ -3629,6 +3758,9 @@ Follow the on-screen notices for current updates</textarea>
       'tickerScheduleMode',
       'tickerScheduleStart',
       'tickerScheduleEnd',
+      'logoOverlayEnabled',
+      'logoOverlayImage',
+      'logoOverlayPosition',
       'collageBgType',
       'collageBgColor',
       'collageBgImage',
@@ -3654,10 +3786,11 @@ Follow the on-screen notices for current updates</textarea>
       document.getElementById(id).addEventListener('input', () => scheduleMediaUpdate());
     });
 
-    ['tickerSpeed', 'collageBgOpacity', 'collageBgBlur'].forEach((id) => {
+    ['tickerSpeed', 'collageBgOpacity', 'collageBgBlur', 'logoOverlaySize', 'logoOverlayOpacity', 'logoOverlayMargin'].forEach((id) => {
       document.getElementById(id).addEventListener('input', () => {
         if (id === 'tickerSpeed') updateTickerSpeedLabel();
         updateBackgroundRangeLabels();
+        updateLogoOverlayRangeLabels();
         scheduleMediaUpdate();
       });
     });
