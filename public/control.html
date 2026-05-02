@@ -843,6 +843,79 @@
     .setting-card .form-row {
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)) !important;
     }
+
+    .panel > .setting-card {
+      margin-bottom: 24px;
+    }
+
+    .setting-card.accordion-section {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: clamp(16px, 2vw, 24px);
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .accordion-header:hover {
+      background: rgba(59, 130, 246, 0.06);
+    }
+
+    .accordion-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .accordion-title .material-icons-round {
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .accordion-title-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .accordion-chevron {
+      color: var(--text-secondary);
+      font-size: 22px;
+      transition: transform 0.2s ease;
+      flex: 0 0 auto;
+    }
+
+    .accordion-section.is-open .accordion-chevron {
+      transform: rotate(180deg);
+    }
+
+    .accordion-content {
+      display: none;
+      padding: 0 clamp(16px, 2vw, 24px) clamp(16px, 2vw, 24px);
+    }
+
+    .accordion-section.is-open .accordion-content {
+      display: block;
+    }
+
+    .accordion-content > :last-child {
+      margin-bottom: 0;
+    }
     
     .theme-options {
       display: grid;
@@ -1320,6 +1393,10 @@
         padding: 16px;
       }
 
+      .setting-card.accordion-section {
+        padding: 0;
+      }
+
       .layout-options {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -1413,6 +1490,10 @@
 
       .setting-card {
         padding: 14px;
+      }
+
+      .setting-card.accordion-section {
+        padding: 0;
       }
 
       .layout-options {
@@ -1522,22 +1603,25 @@
       <div class="panel active" id="mediaPanel">
         <h2><span class="material-icons-round">perm_media</span> Media Playlist</h2>
 
-        <div class="media-toolbar">
-          <input type="file" class="file-input" id="mediaFileInput" accept="image/*,video/*" multiple>
-          <button class="btn btn-primary" onclick="uploadMediaFiles()">
-            <span class="material-icons-round">upload</span> Upload
-          </button>
+        <div class="setting-card accordion-open" data-accordion-icon="upload" data-accordion-default="open">
+          <h4>Upload Media</h4>
+          <div class="media-toolbar">
+            <input type="file" class="file-input" id="mediaFileInput" accept="image/*,video/*" multiple>
+            <button class="btn btn-primary" onclick="uploadMediaFiles()">
+              <span class="material-icons-round">upload</span> Upload
+            </button>
+          </div>
+          <div class="upload-status" id="mediaUploadStatus"></div>
         </div>
-        <div class="upload-status" id="mediaUploadStatus"></div>
 
         <div class="settings-grid">
-          <div class="setting-card">
+          <div class="setting-card" data-accordion-icon="perm_media">
             <h4>Available Assets</h4>
             <p class="muted-text">Upload images or videos, then add them to the active playlist for the display player.</p>
             <div class="media-grid" id="mediaLibraryGrid"></div>
           </div>
 
-          <div class="setting-card">
+          <div class="setting-card" data-accordion-icon="dashboard_customize">
             <h4>Screen Layout</h4>
             <p class="muted-text">Choose how many media zones appear at once. The playlist fills each zone from the current item onward.</p>
             <div class="layout-options" id="layoutOptions">
@@ -1589,7 +1673,7 @@
             <div class="zone-assignment-grid" id="zoneAssignmentGrid"></div>
           </div>
 
-          <div class="setting-card">
+          <div class="setting-card" data-accordion-icon="subtitles">
             <h4>Ticker Overlay</h4>
             <label class="ticker-toggle">
               <input type="checkbox" id="tickerEnabled">
@@ -1670,7 +1754,7 @@
             <p class="muted-text">This overlays the media layout and keeps scrolling across the bottom of the display.</p>
           </div>
 
-          <div class="setting-card">
+          <div class="setting-card" data-accordion-icon="wallpaper">
             <h4>Collage Background</h4>
             <div class="form-row" style="grid-template-columns: 1fr 1fr;">
               <div class="form-group">
@@ -1720,7 +1804,7 @@
             </div>
           </div>
 
-          <div class="setting-card">
+          <div class="setting-card" data-accordion-icon="playlist_play">
             <h4>Active Playlist</h4>
             <div class="form-row" style="grid-template-columns: 1fr 1fr;">
               <div class="form-group">
@@ -1761,102 +1845,105 @@
       <!-- Bible Panel -->
       <div class="panel" id="biblePanel">
         <h2>📖 Bible Verses <span class="kjv-badge">KJV</span><span class="offline-badge" id="offlineBadge">📴 Offline Ready</span></h2>
-        
-        <div class="book-info" id="bookInfo">
-          <span>Selected: </span><strong id="bookInfoText">Genesis</strong>
-          <span> • </span><span id="bookChapterCount">50 chapters</span>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label>Book</label>
-            <div class="autocomplete-wrapper">
-              <input type="text" 
-                     class="autocomplete-input" 
-                     id="bibleBookInput" 
-                     placeholder="Type book name..."
-                     autocomplete="off"
-                     oninput="onBookInput()"
-                     onfocus="showBookDropdown()"
-                     onkeydown="handleBookKeydown(event)">
-              <button class="autocomplete-clear" onclick="clearBookInput()" id="bookClearBtn" style="display:none;">×</button>
-              <div class="autocomplete-dropdown" id="bookDropdown"></div>
-            </div>
+
+        <div class="setting-card" data-accordion-icon="menu_book">
+          <h4>Bible Verse Controls</h4>
+          <div class="book-info" id="bookInfo">
+            <span>Selected: </span><strong id="bookInfoText">Genesis</strong>
+            <span> • </span><span id="bookChapterCount">50 chapters</span>
           </div>
-          <div class="form-group">
-            <label>Chapter</label>
-            <div class="number-input-wrapper">
-              <button class="number-btn" onclick="adjustChapter(-1)">−</button>
-              <input type="number" 
-                     class="autocomplete-input number-input" 
-                     id="bibleChapter" 
-                     placeholder="Ch"
-                     min="1"
-                     oninput="onChapterInput()"
-                     onchange="onChapterChange()">
-              <button class="number-btn" onclick="adjustChapter(1)">+</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Verse(s)</label>
-            <div class="verse-input-row">
-              <div class="number-input-wrapper">
-                <button class="number-btn" onclick="adjustVerse(-1, 'start')">−</button>
-                <input type="number" 
-                       class="autocomplete-input number-input" 
-                       id="bibleVerse" 
-                       placeholder="V"
-                       min="1"
-                       oninput="onVerseInput()"
-                       onchange="onVerseChange()">
-                <button class="number-btn" onclick="adjustVerse(1, 'start')">+</button>
-              </div>
-              <span class="verse-separator">to</span>
-              <div class="number-input-wrapper">
-                <input type="number" 
-                       class="autocomplete-input number-input" 
-                       id="bibleVerseEnd" 
-                       placeholder="—"
-                       min="1"
-                       oninput="onVerseInput()"
-                       onchange="onVerseChange()">
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Book</label>
+              <div class="autocomplete-wrapper">
+                <input type="text" 
+                       class="autocomplete-input" 
+                       id="bibleBookInput" 
+                       placeholder="Type book name..."
+                       autocomplete="off"
+                       oninput="onBookInput()"
+                       onfocus="showBookDropdown()"
+                       onkeydown="handleBookKeydown(event)">
+                <button class="autocomplete-clear" onclick="clearBookInput()" id="bookClearBtn" style="display:none;">×</button>
+                <div class="autocomplete-dropdown" id="bookDropdown"></div>
               </div>
             </div>
+            <div class="form-group">
+              <label>Chapter</label>
+              <div class="number-input-wrapper">
+                <button class="number-btn" onclick="adjustChapter(-1)">−</button>
+                <input type="number" 
+                       class="autocomplete-input number-input" 
+                       id="bibleChapter" 
+                       placeholder="Ch"
+                       min="1"
+                       oninput="onChapterInput()"
+                       onchange="onChapterChange()">
+                <button class="number-btn" onclick="adjustChapter(1)">+</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Verse(s)</label>
+              <div class="verse-input-row">
+                <div class="number-input-wrapper">
+                  <button class="number-btn" onclick="adjustVerse(-1, 'start')">−</button>
+                  <input type="number" 
+                         class="autocomplete-input number-input" 
+                         id="bibleVerse" 
+                         placeholder="V"
+                         min="1"
+                         oninput="onVerseInput()"
+                         onchange="onVerseChange()">
+                  <button class="number-btn" onclick="adjustVerse(1, 'start')">+</button>
+                </div>
+                <span class="verse-separator">to</span>
+                <div class="number-input-wrapper">
+                  <input type="number" 
+                         class="autocomplete-input number-input" 
+                         id="bibleVerseEnd" 
+                         placeholder="—"
+                         min="1"
+                         oninput="onVerseInput()"
+                         onchange="onVerseChange()">
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        
-        <div class="quick-verse-input">
-          <label>⚡ Quick reference (e.g., "John 3:16" or "Rom 8:28-30"):</label>
-          <div class="quick-input-row">
-            <input type="text" id="quickVerseInput" placeholder="Type and press Enter..." onkeypress="handleQuickVerseKeypress(event)">
-            <button class="btn btn-secondary" onclick="parseQuickVerse()">Go</button>
+          
+          <div class="quick-verse-input">
+            <label>⚡ Quick reference (e.g., "John 3:16" or "Rom 8:28-30"):</label>
+            <div class="quick-input-row">
+              <input type="text" id="quickVerseInput" placeholder="Type and press Enter..." onkeypress="handleQuickVerseKeypress(event)">
+              <button class="btn btn-secondary" onclick="parseQuickVerse()">Go</button>
+            </div>
           </div>
-        </div>
-        
-        <div class="form-group">
-          <label>Verse Text <span class="auto-loaded" id="autoLoadedBadge" style="display:none;">✓ Auto-loaded from KJV</span></label>
-          <textarea id="bibleText" placeholder="Select a verse above to auto-load, or type manually..."></textarea>
-        </div>
-        
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="displayBibleVerse()">
-            Display Verse
-          </button>
-          <button class="btn btn-secondary" onclick="fetchVerse()">
-            🔄 Reload Verse
-          </button>
-        </div>
-        
-        <div class="preview-window">
-          <h4>Preview</h4>
-          <div class="preview-content" id="biblePreview">
-            Select a verse to preview
+          
+          <div class="form-group">
+            <label>Verse Text <span class="auto-loaded" id="autoLoadedBadge" style="display:none;">✓ Auto-loaded from KJV</span></label>
+            <textarea id="bibleText" placeholder="Select a verse above to auto-load, or type manually..."></textarea>
           </div>
-        </div>
-        
-        <div class="chapter-verses" id="chapterVersesContainer" style="display:none;">
-          <h4>📜 Chapter Verses <button class="btn-small" onclick="toggleChapterView()">Hide</button></h4>
-          <div id="chapterVersesList"></div>
+          
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="displayBibleVerse()">
+              Display Verse
+            </button>
+            <button class="btn btn-secondary" onclick="fetchVerse()">
+              🔄 Reload Verse
+            </button>
+          </div>
+          
+          <div class="preview-window">
+            <h4>Preview</h4>
+            <div class="preview-content" id="biblePreview">
+              Select a verse to preview
+            </div>
+          </div>
+          
+          <div class="chapter-verses" id="chapterVersesContainer" style="display:none;">
+            <h4>📜 Chapter Verses <button class="btn-small" onclick="toggleChapterView()">Hide</button></h4>
+            <div id="chapterVersesList"></div>
+          </div>
         </div>
       </div>
       
@@ -1864,76 +1951,87 @@
       <div class="panel" id="lyricsPanel">
         <h2><span class="material-icons-round">text_fields</span> Text Slides</h2>
         
-        <!-- Message Library Controls -->
-        <div class="quick-verse-input" style="padding: 16px; margin-bottom: 24px;">
-          <label>Message Library</label>
-          <div class="quick-input-row" style="flex-direction: row; gap: 8px;">
-            <select id="songLibrarySelect" onchange="selectSongFromLibrary(this.value)" style="flex: 1;">
-              <option value="">Select a saved message...</option>
-            </select>
-            <button class="btn btn-secondary" onclick="refreshSongLibrary()" title="Refresh Library">🔄</button>
+        <div class="setting-card" data-accordion-icon="library_books">
+          <h4>Message Library</h4>
+          <div class="quick-verse-input" style="padding: 16px; margin-bottom: 0;">
+            <label>Message Library</label>
+            <div class="quick-input-row" style="flex-direction: row; gap: 8px;">
+              <select id="songLibrarySelect" onchange="selectSongFromLibrary(this.value)" style="flex: 1;">
+                <option value="">Select a saved message...</option>
+              </select>
+              <button class="btn btn-secondary" onclick="refreshSongLibrary()" title="Refresh Library">🔄</button>
+            </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Slide Set Title</label>
-          <input type="text" id="lyricsTitle" placeholder="e.g., Weekend Promotion" value="Welcome Message">
-        </div>
-        
-        <div class="form-group">
-          <label>Text Slides (separate slides with blank lines)</label>
-          <textarea id="lyricsText" placeholder="Enter display text here. Use blank lines to separate slides...">Welcome to our location
+        <div class="setting-card" data-accordion-icon="text_fields">
+          <h4>Text Slide Editor</h4>
+          <div class="form-group">
+            <label>Slide Set Title</label>
+            <input type="text" id="lyricsTitle" placeholder="e.g., Weekend Promotion" value="Welcome Message">
+          </div>
+          
+          <div class="form-group">
+            <label>Text Slides (separate slides with blank lines)</label>
+            <textarea id="lyricsText" placeholder="Enter display text here. Use blank lines to separate slides...">Welcome to our location
 We are glad you are here
 
 Ask our team about today's featured services
 
 Follow the on-screen notices for current updates</textarea>
+          </div>
+          
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="loadLyrics()">
+              Load to Screen
+            </button>
+            <button class="btn btn-secondary" onclick="saveSongToLibrary()">
+              💾 Save Message
+            </button>
+            <button class="delete-btn" onclick="deleteSongFromLibrary()" style="margin-left: auto;">
+              🗑️ Delete
+            </button>
+          </div>
         </div>
-        
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="loadLyrics()">
-            Load to Screen
-          </button>
-          <button class="btn btn-secondary" onclick="saveSongToLibrary()">
-            💾 Save Message
-          </button>
-          <button class="delete-btn" onclick="deleteSongFromLibrary()" style="margin-left: auto;">
-            🗑️ Delete
-          </button>
-        </div>
-        
-        <div class="nav-controls">
-          <button class="nav-btn" id="prevSlideBtn" onclick="navigateLyrics('prev')">◀</button>
-          <button class="nav-btn" id="nextSlideBtn" onclick="navigateLyrics('next')">▶</button>
-        </div>
-        
-        <div class="slides-container" id="slidesContainer">
-          <!-- Slides will be dynamically generated -->
+
+        <div class="setting-card" data-accordion-icon="slideshow">
+          <h4>Slide Navigation</h4>
+          <div class="nav-controls">
+            <button class="nav-btn" id="prevSlideBtn" onclick="navigateLyrics('prev')">◀</button>
+            <button class="nav-btn" id="nextSlideBtn" onclick="navigateLyrics('next')">▶</button>
+          </div>
+          
+          <div class="slides-container" id="slidesContainer">
+            <!-- Slides will be dynamically generated -->
+          </div>
         </div>
       </div>
       
       <!-- Schedule Panel -->
       <div class="panel" id="programPanel">
         <h2><span class="material-icons-round">event_note</span> Schedule</h2>
-        
-        <div class="add-event-row">
-          <input type="text" id="newEventInput" placeholder="Add scheduled item..." onkeypress="handleEventKeypress(event)">
-          <button class="btn btn-primary" onclick="addEvent()">Add</button>
-        </div>
-        
-        <div class="nav-controls">
-          <button class="nav-btn" id="prevEventBtn" onclick="navigateProgram('prev')">◀</button>
-          <button class="nav-btn" id="nextEventBtn" onclick="navigateProgram('next')">▶</button>
-        </div>
-        
-        <div id="eventsContainer">
-          <!-- Events will be dynamically generated -->
-        </div>
-        
-        <div class="btn-group" style="margin-top: 20px;">
-          <button class="btn btn-secondary" onclick="loadSampleProgram()">
-            Load Sample Schedule
-          </button>
+
+        <div class="setting-card" data-accordion-icon="event_note">
+          <h4>Schedule Items</h4>
+          <div class="add-event-row">
+            <input type="text" id="newEventInput" placeholder="Add scheduled item..." onkeypress="handleEventKeypress(event)">
+            <button class="btn btn-primary" onclick="addEvent()">Add</button>
+          </div>
+          
+          <div class="nav-controls">
+            <button class="nav-btn" id="prevEventBtn" onclick="navigateProgram('prev')">◀</button>
+            <button class="nav-btn" id="nextEventBtn" onclick="navigateProgram('next')">▶</button>
+          </div>
+          
+          <div id="eventsContainer">
+            <!-- Events will be dynamically generated -->
+          </div>
+          
+          <div class="btn-group" style="margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="loadSampleProgram()">
+              Load Sample Schedule
+            </button>
+          </div>
         </div>
       </div>
       
@@ -1942,7 +2040,7 @@ Follow the on-screen notices for current updates</textarea>
         <h2>⚙️ Display Settings</h2>
         
         <div class="settings-grid">
-          <div class="setting-card">
+          <div class="setting-card" data-accordion-icon="palette">
             <h4>Theme</h4>
             <div class="theme-options">
               <button class="theme-btn dark active" onclick="setTheme('dark')">Dark</button>
@@ -1952,7 +2050,7 @@ Follow the on-screen notices for current updates</textarea>
             </div>
           </div>
           
-          <div class="setting-card">
+          <div class="setting-card" data-accordion-icon="format_size">
             <h4>Font Size: <span id="fontSizeValue">48</span>px</h4>
             <input type="range" class="font-slider" id="fontSizeSlider" min="24" max="96" value="48" oninput="updateFontSize(this.value)">
             <div class="font-preview" id="fontPreview" style="font-size: 24px;">
@@ -2029,6 +2127,67 @@ Follow the on-screen notices for current updates</textarea>
       mosaic: ['Feature', 'Top Center', 'Top Right', 'Bottom Center', 'Bottom Right'],
       six: ['Top Left', 'Top Center', 'Top Right', 'Bottom Left', 'Bottom Center', 'Bottom Right']
     };
+
+    function initAccordions() {
+      document.querySelectorAll('.setting-card').forEach((card, index) => {
+        if (card.dataset.accordionReady === 'true') return;
+
+        const heading = Array.from(card.children).find((child) => child.tagName === 'H4');
+        if (!heading) return;
+
+        const isOpen = card.dataset.accordionDefault === 'open' || card.classList.contains('accordion-open');
+        const content = document.createElement('div');
+        const contentId = `accordionContent${index}`;
+        content.className = 'accordion-content';
+        content.id = contentId;
+
+        while (heading.nextSibling) {
+          content.appendChild(heading.nextSibling);
+        }
+
+        const header = document.createElement('button');
+        header.type = 'button';
+        header.className = 'accordion-header';
+        header.setAttribute('aria-controls', contentId);
+
+        const title = document.createElement('span');
+        title.className = 'accordion-title';
+
+        const icon = document.createElement('span');
+        icon.className = 'material-icons-round';
+        icon.textContent = card.dataset.accordionIcon || 'tune';
+
+        const titleText = document.createElement('span');
+        titleText.className = 'accordion-title-text';
+        while (heading.firstChild) {
+          titleText.appendChild(heading.firstChild);
+        }
+
+        const chevron = document.createElement('span');
+        chevron.className = 'material-icons-round accordion-chevron';
+        chevron.textContent = 'expand_more';
+
+        title.append(icon, titleText);
+        header.append(title, chevron);
+        heading.replaceWith(header);
+        card.appendChild(content);
+        card.classList.add('accordion-section');
+        card.dataset.accordionReady = 'true';
+
+        setAccordionState(card, isOpen);
+        header.addEventListener('click', () => {
+          setAccordionState(card, !card.classList.contains('is-open'));
+        });
+      });
+    }
+
+    function setAccordionState(card, isOpen) {
+      const header = card.querySelector(':scope > .accordion-header');
+      const content = card.querySelector(':scope > .accordion-content');
+      card.classList.toggle('is-open', isOpen);
+      if (header) header.setAttribute('aria-expanded', String(isOpen));
+      if (content) content.hidden = !isOpen;
+    }
     
     // Bible data
     let bibleBooks = [];
@@ -3413,6 +3572,7 @@ Follow the on-screen notices for current updates</textarea>
     });
 
     // Initialize
+    initAccordions();
     updateBiblePreview();
     
     // Mobile Menu Logic
